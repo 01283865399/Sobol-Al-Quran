@@ -1,0 +1,305 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Reem+Kufi:wght@400;500;600;700&family=Cairo:wght@300;400;500;600;700;800;900&family=Tajawal:wght@300;400;500;700&family=Scheherazade+New:wght@400;700&display=swap');
+
+@layer base {
+  :root {
+    /* الوضع الفاتح: رخام صحن الحرم النهاري المريح للعين */
+    --background: 44 24% 96%;
+    --foreground: 165 30% 9%;
+    
+    --card: 40 30% 99%;
+    --card-foreground: 165 30% 9%;
+    
+    --popover: 40 30% 99%;
+    --popover-foreground: 165 30% 9%;
+    
+    --primary: 168 70% 21%;
+    --primary-foreground: 44 24% 96%;
+    
+    --secondary: 42 18% 90%;
+    --secondary-foreground: 168 70% 21%;
+    
+    --muted: 42 14% 91%;
+    --muted-foreground: 165 14% 38%;
+    
+    --accent: 168 55% 32%;
+    --accent-foreground: 44 24% 96%;
+    
+    --destructive: 0 74% 42%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 42 18% 85%;
+    --input: 42 18% 85%;
+    --ring: 168 55% 32%;
+    
+    --radius: 1rem;
+
+    /* باليت الألوان الملكية للحرم المكي */
+    --sacred-black: #060B0A;
+    --sacred-night: #091311;
+    --teal-deep: #0B2924;
+    --teal-dark: #0F3832;
+    --teal-mid: #1B5E54;
+    --teal-light: #2E8A7D;
+    --teal-bright: #52B7A8;
+    
+    --marble-pure: #FAF8F5;
+    --marble-warm: #F4EFEA;
+    --sand-hollow: #E7DEC8;
+    
+    --gold-deep: #9A7B38;
+    --gold-kiswa: #C5A059;
+    --gold-bright: #E5C378;
+    --gold-glow: #F3DC9B;
+  }
+
+  .dark {
+    /* الوضع الداكن: ليل الحرم الشريف وعمق الكعبة والكسوة */
+    --background: 168 38% 4%;
+    --foreground: 44 25% 93%;
+    
+    --card: 168 32% 7%;
+    --card-foreground: 44 25% 93%;
+    
+    --popover: 168 32% 7%;
+    --popover-foreground: 44 25% 93%;
+    
+    --primary: 168 48% 46%;
+    --primary-foreground: 168 38% 4%;
+    
+    --secondary: 168 20% 11%;
+    --secondary-foreground: 44 25% 93%;
+    
+    --muted: 168 20% 11%;
+    --muted-foreground: 44 14% 58%;
+    
+    --accent: 42 65% 58%;
+    --accent-foreground: 168 38% 4%;
+    
+    --destructive: 0 65% 38%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 168 18% 13%;
+    --input: 168 18% 13%;
+    --ring: 42 65% 58%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Tajawal', 'Cairo', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    position: relative;
+    background-attachment: fixed;
+    
+    /* 
+      الخلفية النهارية الواقعية:
+      مزيج تدرج ضوئي ناعم بين بياض رخام الحرم ولمسات كهرمانية هادئة عند التمرير
+    */
+    background-image:
+      radial-gradient(ellipse 90% 50% at 50% -10%, rgba(27, 94, 84, 0.08) 0%, transparent 70%),
+      radial-gradient(circle 800px at 90% 40%, rgba(197, 160, 89, 0.06) 0%, transparent 60%),
+      radial-gradient(circle 900px at 10% 85%, rgba(46, 138, 125, 0.05) 0%, transparent 60%),
+      linear-gradient(180deg, rgba(250, 248, 245, 0.5) 0%, rgba(244, 239, 234, 0.8) 100%);
+  }
+
+  .dark body {
+    /* 
+      الخلفية الليلية السينمائية:
+      انعكاس سماء مكة الصافية وعمق هالات الإنارة المحيطة بالكعبة وصحن المطاف
+    */
+    background-image:
+      radial-gradient(ellipse 100% 60% at 50% -15%, rgba(197, 160, 89, 0.12) 0%, transparent 75%),
+      radial-gradient(circle 950px at 85% 30%, rgba(15, 56, 50, 0.35) 0%, transparent 65%),
+      radial-gradient(circle 850px at 15% 70%, rgba(197, 160, 89, 0.07) 0%, transparent 60%),
+      radial-gradient(circle 700px at 50% 100%, rgba(11, 41, 36, 0.45) 0%, transparent 70%),
+      linear-gradient(180deg, #050A09 0%, #07100E 50%, #050908 100%);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cairo', 'Amiri', serif;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  
+  .font-quran { font-family: 'Scheherazade New', 'Amiri', serif; }
+  .font-amiri { font-family: 'Amiri', serif; }
+  .font-kufi { font-family: 'Cairo', sans-serif; font-weight: 800; }
+  .font-cairo { font-family: 'Cairo', sans-serif; }
+  .font-tajawal { font-family: 'Tajawal', sans-serif; }
+
+  ::selection {
+    background: rgba(197, 160, 89, 0.28);
+    color: inherit;
+  }
+}
+
+@layer utilities {
+  /* ================== الزجاج المعماري الصافي (Architectural Frosted Glass) ================== */
+  
+  /* زجاج البطاقات في الوضع النهاري */
+  .glass {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border: 1px solid rgba(197, 160, 89, 0.16);
+  }
+
+  /* زجاج البطاقات للوضع الليلي المنسجم مع هالة الحرم */
+  .glass-dark {
+    background: rgba(10, 20, 18, 0.58);
+    backdrop-filter: blur(28px) saturate(140%);
+    -webkit-backdrop-filter: blur(28px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  }
+
+  .dark .glass {
+    background: rgba(12, 24, 21, 0.65);
+    backdrop-filter: blur(24px) saturate(140%);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    border: 1px solid rgba(197, 160, 89, 0.12);
+  }
+
+  /* زجاج مذهب فاخر للآيات والبطاقات البارزة */
+  .glass-gold {
+    background: linear-gradient(135deg, rgba(197, 160, 89, 0.08) 0%, rgba(197, 160, 89, 0.02) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(197, 160, 89, 0.24);
+  }
+
+  /* ================== إبطال وتطهير أي نقوش كرتونية أو مربعات ================== */
+  .mosaic-pattern,
+  .arabesque-3d,
+  .star-pattern,
+  .pattern,
+  .bg-pattern {
+    background-image: none !important;
+  }
+
+  /* ================== تدرجات الخطوط الفاخرة ================== */
+  .text-gold-gradient {
+    background: linear-gradient(135deg, #C5A059 0%, #F3DC9B 50%, #C5A059 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .text-teal-gradient {
+    background: linear-gradient(135deg, #1B5E54 0%, #52B7A8 50%, #1B5E54 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .dark .text-teal-gradient {
+    background: linear-gradient(135deg, #52B7A8 0%, #A8EBE0 50%, #52B7A8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .text-kiswa-silver {
+    background: linear-gradient(135deg, #E2E8F0 0%, #FFFFFF 50%, #94A3B8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* ================== تدرجات إسلامية واقعية ================== */
+  .gold-gradient {
+    background: linear-gradient(135deg, #C5A059 0%, #E5C378 50%, #9A7B38 100%);
+  }
+
+  .teal-gradient {
+    background: linear-gradient(135deg, #103D37 0%, #1B5E54 50%, #0F3832 100%);
+  }
+
+  /* ================== ظلال عميقة واقعية ================== */
+  .shadow-sacred {
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08), 0 4px 12px -4px rgba(197, 160, 89, 0.08);
+  }
+
+  .dark .shadow-sacred {
+    box-shadow: 0 14px 40px -12px rgba(0, 0, 0, 0.7), 0 0 25px -5px rgba(197, 160, 89, 0.08);
+  }
+
+  .shadow-gold-subtle {
+    box-shadow: 0 0 35px -5px rgba(197, 160, 89, 0.15);
+  }
+
+  .shadow-teal-subtle {
+    box-shadow: 0 0 35px -5px rgba(27, 94, 84, 0.18);
+  }
+
+  /* ================== حواف مضيئة خافتة جداً (Subtle Glow Borders) ================== */
+  .border-glow-gold {
+    border: 1px solid rgba(197, 160, 89, 0.28);
+    position: relative;
+  }
+  
+  .border-glow-gold::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(197, 160, 89, 0.4), transparent, rgba(197, 160, 89, 0.2));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+  .text-balance { text-wrap: balance; }
+  .text-pretty { text-wrap: pretty; }
+  .perspective-1000 { perspective: 1000px; }
+  .preserve-3d { transform-style: preserve-3d; }
+}
+
+/* ================== أنيميشن هادئ بطيء ومريح للعين ================== */
+@keyframes ambient-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.25; }
+  50% { transform: scale(1.04); opacity: 0.45; }
+}
+
+@keyframes slow-drift {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(0.4deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-ambient-pulse {
+  animation: ambient-pulse 8s ease-in-out infinite;
+}
+
+.animate-slow-drift {
+  animation: slow-drift 10s ease-in-out infinite;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

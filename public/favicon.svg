@@ -1,0 +1,46 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="512" y2="512">
+      <stop offset="0%" stop-color="#0F5132"/>
+      <stop offset="100%" stop-color="#0A3D28"/>
+    </linearGradient>
+    <linearGradient id="tealGrad" x1="0" y1="0" x2="0" y2="512">
+      <stop offset="0%" stop-color="#7FD9CE"/>
+      <stop offset="40%" stop-color="#2A9D8F"/>
+      <stop offset="100%" stop-color="#1A6B62"/>
+    </linearGradient>
+    <linearGradient id="tealShine" x1="0" y1="0" x2="512" y2="0">
+      <stop offset="0%" stop-color="#2A9D8F"/>
+      <stop offset="50%" stop-color="#A0EDE2"/>
+      <stop offset="100%" stop-color="#2A9D8F"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#bgGrad)"/>
+  <rect x="8" y="8" width="496" height="496" rx="88" fill="none" stroke="url(#tealGrad)" stroke-width="2" opacity="0.3"/>
+
+  <!-- Dome -->
+  <path d="M256 80 C200 80 165 130 165 185 L165 250 L347 250 L347 185 C347 130 312 80 256 80Z" fill="url(#tealGrad)" opacity="0.95"/>
+  <!-- Dome highlight -->
+  <path d="M256 90 C220 90 195 130 190 170 C190 170 220 150 256 150 C292 150 322 170 322 170 C317 130 292 90 256 90Z" fill="url(#tealShine)" opacity="0.3"/>
+
+  <!-- Crescent on top -->
+  <path d="M256 50 C248 50 242 56 242 64 C242 72 248 78 256 78 C252 76 250 72 250 64 C250 56 252 52 256 50Z" fill="url(#tealGrad)"/>
+
+  <!-- Base/body -->
+  <rect x="175" y="250" width="162" height="120" rx="8" fill="url(#tealGrad)" opacity="0.85"/>
+
+  <!-- Arch doorway -->
+  <path d="M220 370 L220 290 C220 270 235 255 256 255 C277 255 292 270 292 290 L292 370 Z" fill="#0A3D28"/>
+
+  <!-- Arrow pointing up -->
+  <path d="M256 150 L256 110 M244 122 L256 110 L268 122" stroke="#FAF6EE" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+
+  <!-- Decorative base line -->
+  <rect x="155" y="370" width="202" height="6" rx="3" fill="url(#tealShine)"/>
+
+  <!-- Side ornaments -->
+  <circle cx="140" cy="310" r="4" fill="url(#tealGrad)" opacity="0.6"/>
+  <circle cx="372" cy="310" r="4" fill="url(#tealGrad)" opacity="0.6"/>
+  <circle cx="140" cy="280" r="2" fill="url(#tealGrad)" opacity="0.4"/>
+  <circle cx="372" cy="280" r="2" fill="url(#tealGrad)" opacity="0.4"/>
+</svg>
