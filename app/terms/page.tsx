@@ -9,9 +9,8 @@ export default function TermsPage() {
         subtitle="الشروط الخاصة باستخدام موقع سُبُل"
         icon={<FileText className="w-8 h-8 text-accent" />}
       />
-      <div className="container mx-auto px-4 lg:px-8 py-12 lg:py-16">
-        <div className="max-w-2xl mx-auto">
-          <div className="bg-card rounded-2xl p-8 border border-border/50 space-y-6 font-cairo leading-relaxed text-muted-foreground">
+      <div className="w-full px-4 py-12 lg:px-8 lg:py-16">
+        <div className="w-full space-y-8 font-cairo leading-relaxed text-muted-foreground">
             <section>
               <h2 className="font-kufi text-xl font-bold text-primary mb-3">استخدام الموقع</h2>
               <p>موقع سُبُل خدمة مجانية مخصصة لخدمة الأمة الإسلامية. يُمنع استخدام الموقع لأي أغراض غير مشروعة أو مخالفة للشريعة الإسلامية.</p>
@@ -28,7 +27,6 @@ export default function TermsPage() {
               <h2 className="font-kufi text-xl font-bold text-primary mb-3">التعديلات</h2>
               <p>نحتفظ بحق تعديل هذه الشروط في أي وقت، وسيتم إعلام المستخدمين بأي تغييرات جوهرية.</p>
             </section>
-          </div>
         </div>
       </div>
     </PageLayout>

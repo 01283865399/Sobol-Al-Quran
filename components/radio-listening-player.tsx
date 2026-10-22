@@ -130,18 +130,23 @@ export function RadioListeningPlayer({
       aria-label="مشغل الإذاعة"
       tabIndex={-1}
       className="quran-listening"
-      style={{ backgroundImage: ambience.fallback }}
+      style={{
+        backgroundImage: ambience.image
+          ? `url("${ambience.image}")`
+          : ambience.fallback,
+      }}
     >
-      {ambience.video && (
+      {open && ambience.video && (
         <video
+          key={ambience.id}
           ref={backgroundVideoRef}
           className="quran-listening__video"
           src={ambience.video}
+          poster={ambience.image ?? undefined}
           muted
           loop
-          autoPlay
           playsInline
-          preload="auto"
+          preload="none"
           aria-hidden="true"
         />
       )}

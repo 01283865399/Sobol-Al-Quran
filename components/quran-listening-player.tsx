@@ -384,7 +384,11 @@ export function QuranListeningPlayer({
       aria-label="مشغل الاستماع للقرآن"
       tabIndex={-1}
       className={`quran-listening${controlsVisible ? '' : ' is-idle'}`}
-      style={{ backgroundImage: ambience.fallback }}
+      style={{
+        backgroundImage: ambience.image
+          ? `url("${ambience.image}")`
+          : ambience.fallback,
+      }}
       onPointerMove={handlePointerActivity}
       onPointerDown={() => {
         handlePointerActivity();
@@ -392,16 +396,17 @@ export function QuranListeningPlayer({
       }}
       onKeyDown={handleKeyboardActivity}
     >
-      {ambience.video && (
+      {open && ambience.video && (
         <video
+          key={ambience.id}
           ref={backgroundVideoRef}
           className="quran-listening__video"
           src={ambience.video}
+          poster={ambience.image ?? undefined}
           muted
           loop
-          autoPlay
           playsInline
-          preload="auto"
+          preload="none"
           aria-hidden="true"
           onError={() => {
             if (activeAmbienceIdRef.current !== ambience.id) return;
@@ -410,12 +415,12 @@ export function QuranListeningPlayer({
           }}
         />
       )}
-      {ambience.audioSource && (
+      {open && ambience.audioSource && (
         <audio
           ref={ambienceAudioRef}
           src={ambience.audioSource}
           loop
-          preload="auto"
+          preload="none"
           aria-hidden="true"
         />
       )}

@@ -10,11 +10,11 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        amiri: ['Amiri', 'serif'],
-        kufi: ['Reem Kufi', 'sans-serif'],
-        cairo: ['Cairo', 'sans-serif'],
-        tajawal: ['Tajawal', 'sans-serif'],
-        quran: ['Scheherazade New', 'Amiri', 'serif'],
+        amiri: ['Traditional Arabic', 'Times New Roman', 'serif'],
+        kufi: ['Segoe UI', 'Tahoma', 'Arial', 'sans-serif'],
+        cairo: ['Segoe UI', 'Tahoma', 'Arial', 'sans-serif'],
+        tajawal: ['Segoe UI', 'Tahoma', 'Arial', 'sans-serif'],
+        quran: ['Traditional Arabic', 'Times New Roman', 'serif'],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

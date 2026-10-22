@@ -223,7 +223,7 @@ export default function QuranPage() {
         icon={<BookOpen className="w-8 h-8 text-accent" />}
       />
 
-      <div className="container mx-auto px-4 lg:px-8 py-12 lg:py-16">
+      <div className="w-full px-4 py-12 lg:px-8 lg:py-16">
         {player.currentSurahNumber !== null && (
           <section
             aria-label="مشغل تلاوة القرآن"
@@ -385,7 +385,7 @@ export default function QuranPage() {
           <TabsContent value="surahs" className="space-y-4">
             {!selectedSurah && !surahLoading && (
               <>
-                <div className="relative max-w-xl mx-auto mb-8">
+                <div className="relative mb-8">
                   <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
                     aria-label="ابحث عن سورة بالاسم أو الرقم"
@@ -492,7 +492,7 @@ export default function QuranPage() {
             )}
 
             {selectedSurah && !surahLoading && (
-              <div className="max-w-3xl mx-auto">
+              <div className="w-full">
                 {/* Surah header */}
                 <div className="flex items-center justify-between mb-6">
                   <Button variant="ghost" onClick={() => setSelectedSurah(null)} className="font-cairo">
@@ -529,7 +529,7 @@ export default function QuranPage() {
                     <Copy className="w-4 h-4 ml-1" /> نسخ السورة
                   </Button>
                 </div>
-                <div className="bg-card rounded-2xl border border-border/50 p-6 lg:p-10 shadow-deep">
+                <div className="py-4 lg:py-6">
                   {/* Ayahs */}
                   <div
                     className="font-quran text-right leading-loose text-foreground"
@@ -592,7 +592,7 @@ export default function QuranPage() {
 
           {/* Search Tab */}
           <TabsContent value="search">
-            <div className="max-w-2xl mx-auto">
+            <div className="w-full">
               <div className="relative mb-6">
                 <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
@@ -723,7 +723,7 @@ export default function QuranPage() {
             {copyError}
           </p>
         )}
-        <p className="mx-auto mt-8 max-w-3xl text-center text-xs leading-relaxed text-muted-foreground">
+        <p className="mt-8 text-center text-xs leading-relaxed text-muted-foreground">
           تُحمّل بيانات السور والتلاوات مباشرة من{' '}
           <a
             href="https://alquran.cloud/api"

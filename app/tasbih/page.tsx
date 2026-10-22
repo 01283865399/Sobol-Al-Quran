@@ -48,8 +48,8 @@ export default function TasbihPage() {
         icon={<CircleDot className="w-8 h-8 text-accent" />}
       />
 
-      <div className="container mx-auto px-4 lg:px-8 py-12 lg:py-16">
-        <div className="max-w-2xl mx-auto">
+      <div className="w-full px-4 py-12 lg:px-8 lg:py-16">
+        <div className="w-full">
           {/* Dhikr selector */}
           <div className="flex flex-col sm:flex-row gap-4 mb-8 items-center justify-center">
             <Select value={selectedDhikr} onValueChange={setSelectedDhikr}>

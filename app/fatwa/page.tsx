@@ -72,7 +72,7 @@ export default function FatwaPage() {
         icon={<FileQuestion className="w-8 h-8 text-accent" />}
       />
 
-      <div className="container mx-auto px-4 lg:px-8 py-12 lg:py-16">
+      <div className="w-full px-4 py-12 lg:px-8 lg:py-16">
         {/* Categories */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-10">
           {fatwaCategories.map((cat, index) => (
@@ -88,7 +88,7 @@ export default function FatwaPage() {
         </div>
 
         {/* Search */}
-        <div className="relative max-w-xl mx-auto mb-8">
+        <div className="relative mb-8">
           <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <Input
             placeholder="ابحث في الفتاوى..."
@@ -99,7 +99,7 @@ export default function FatwaPage() {
         </div>
 
         {/* Fatwas */}
-        <div className="max-w-3xl mx-auto">
+        <div className="w-full">
           <Accordion type="single" collapsible className="space-y-3">
             {filtered.map((fatwa, index) => (
               <AccordionItem

@@ -18,7 +18,7 @@ export const LISTENING_AMBIENCES = [
     label: 'مطر',
     icon: CloudRain,
     image:
-      'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2400&q=85',
+      'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1280&q=65',
     video: getMediaUrl('rain', '/assets/مطر.mp4'),
     audioSource: getMediaUrl('rain-audio', '/assets/مطر-صوت.mp3'),
     hasAudio: true,
@@ -29,7 +29,7 @@ export const LISTENING_AMBIENCES = [
     label: 'نار الحطب',
     icon: Flame,
     image:
-      'https://images.unsplash.com/photo-1414016642750-7fdd78dc33d9?auto=format&fit=crop&w=2400&q=85',
+      'https://images.unsplash.com/photo-1414016642750-7fdd78dc33d9?auto=format&fit=crop&w=1280&q=65',
     video: getMediaUrl('fire', '/assets/نار.mp4'),
     audioSource: getMediaUrl('fire-audio', '/assets/نار-صوت.mp3'),
     hasAudio: true,
@@ -40,7 +40,7 @@ export const LISTENING_AMBIENCES = [
     label: 'الطبيعة',
     icon: Trees,
     image:
-      'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=2400&q=85',
+      'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1280&q=65',
     video: getMediaUrl('nature', '/assets/ضباب.mp4'),
     audioSource: null,
     hasAudio: false,
@@ -51,7 +51,7 @@ export const LISTENING_AMBIENCES = [
     label: 'البحر',
     icon: Waves,
     image:
-      'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=2400&q=85',
+      'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1280&q=65',
     video: getMediaUrl('sea', '/assets/بحر.mp4'),
     audioSource: null,
     hasAudio: false,
@@ -62,7 +62,7 @@ export const LISTENING_AMBIENCES = [
     label: 'السماء',
     icon: CloudSun,
     image:
-      'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=2400&q=85',
+      'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=1280&q=65',
     video: getMediaUrl('sky', '/assets/سماء.mp4'),
     audioSource: null,
     hasAudio: false,

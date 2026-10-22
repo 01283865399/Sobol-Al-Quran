@@ -20,7 +20,7 @@ export function useQuranAudio() {
   const pendingSeekRef = React.useRef<number | null>(null);
   const playbackAttemptRef = React.useRef(0);
   const playlistRequestRef = React.useRef(0);
-  const selectedReciterRef = React.useRef(QURAN_RECITERS[5].id);
+  const selectedReciterRef = React.useRef('ar.alafasy');
 
   const [selectedReciter, setSelectedReciter] = React.useState(selectedReciterRef.current);
   const [currentSurahNumber, setCurrentSurahNumber] = React.useState<number | null>(null);

@@ -135,7 +135,7 @@ export default function RadioPage() {
           onVolumeChange={setVolume}
         />
       )}
-      <div className="container mx-auto px-4 py-4 lg:px-8 lg:py-6">
+      <div className="w-full px-4 py-4 lg:px-8 lg:py-6">
         {selectedStation && (
           <section
             aria-label="مشغل الإذاعة"
@@ -195,7 +195,7 @@ export default function RadioPage() {
           </section>
         )}
 
-        <section className="mb-5 rounded-2xl border border-accent/10 bg-card p-4 sm:p-5">
+        <section className="mb-5 border-b border-border/50 pb-5">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex min-w-0 items-center gap-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/5 text-primary">
@@ -266,7 +266,7 @@ export default function RadioPage() {
             <p className="text-muted-foreground">لا توجد محطات مطابقة لبحثك.</p>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-2xl border border-border/50 bg-card">
+          <div className="overflow-hidden">
             <ul className="divide-y divide-border/50">
               {pageStations.map((station) => {
                 const active = selectedStation?.id === station.id;
@@ -319,7 +319,7 @@ export default function RadioPage() {
         )}
 
         {!stationsLoading && !stationsError && visibleStations.length > STATIONS_PER_PAGE && (
-          <nav className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-border/50 bg-card px-3 py-2" aria-label="صفحات المحطات">
+          <nav className="mt-4 flex items-center justify-between gap-3 border-t border-border/50 px-1 py-3" aria-label="صفحات المحطات">
             <Button
               type="button"
               variant="outline"

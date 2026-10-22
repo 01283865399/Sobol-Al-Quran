@@ -31,6 +31,9 @@ function ReciterCard({ reciter }: { reciter: (typeof QURAN_RECITERS)[number] }) 
         <div className="quran-reciter-card__info">
           <h2>{reciter.name}</h2>
           <p>{reciter.englishName}</p>
+          <small className="quran-reciter-card__style">
+            {reciter.recitationCategory === 'mujawwad' ? 'التجويد' : 'الترتيل'}
+          </small>
           <span>استمع للتلاوات <ArrowLeft aria-hidden="true" /></span>
         </div>
       </Link>
@@ -41,7 +44,19 @@ function ReciterCard({ reciter }: { reciter: (typeof QURAN_RECITERS)[number] }) 
           target="_blank"
           rel="noreferrer"
         >
-          الصورة: {reciter.portraitAttribution} · {reciter.portraitLicense}
+          {reciter.portraitLicense
+            ? `الصورة: ${reciter.portraitAttribution} · ${reciter.portraitLicense}`
+            : `مصدر الصورة: ${reciter.portraitAttribution}`}
+        </a>
+      )}
+      {reciter.recordingsSourceUrl && (
+        <a
+          className="quran-reciter-card__credit"
+          href={reciter.recordingsSourceUrl}
+          target="_blank"
+          rel="noreferrer"
+        >
+          مصدر التلاوات: Internet Archive
         </a>
       )}
     </article>
@@ -49,6 +64,13 @@ function ReciterCard({ reciter }: { reciter: (typeof QURAN_RECITERS)[number] }) 
 }
 
 export default function QuranListeningHomePage() {
+  const murattalReciters = QURAN_RECITERS.filter(
+    (reciter) => reciter.recitationCategory === 'murattal'
+  );
+  const mujawwadReciters = QURAN_RECITERS.filter(
+    (reciter) => reciter.recitationCategory === 'mujawwad'
+  );
+
   return (
     <PageLayout>
       <PageHeader
@@ -57,9 +79,11 @@ export default function QuranListeningHomePage() {
         icon={<Headphones className="h-8 w-8 text-accent" />}
       />
 
-      <section className="container mx-auto px-4 py-8 lg:px-8 lg:py-12" aria-label="قائمة القراء">
+      <section className="w-full px-4 py-8 lg:px-8 lg:py-12" aria-label="قائمة القراء">
         <div className="mb-7 flex flex-wrap items-center justify-between gap-4">
-          <h2 className="font-kufi text-xl font-bold text-foreground">القراء</h2>
+          <h2 className="font-kufi text-xl font-bold text-foreground">
+            جميع القراء ({QURAN_RECITERS.length})
+          </h2>
           <Link
             href="/quran/read"
             className="inline-flex min-h-10 items-center gap-2 rounded-full border border-border/70 px-4 text-sm text-muted-foreground transition-colors hover:border-accent/50 hover:text-primary"
@@ -69,10 +93,32 @@ export default function QuranListeningHomePage() {
           </Link>
         </div>
 
-        <div className="quran-reciter-grid">
-          {QURAN_RECITERS.map((reciter) => (
-            <ReciterCard key={reciter.id} reciter={reciter} />
-          ))}
+        <div className="quran-reciter-categories">
+          <section aria-labelledby="murattal-reciter-heading">
+            <h3 className="mb-4 font-kufi text-lg font-bold text-foreground">
+              <span id="murattal-reciter-heading">الترتيل</span>
+              <span className="quran-reciter-section-count">{murattalReciters.length} قارئًا</span>
+            </h3>
+            <div className="quran-reciter-grid">
+              {murattalReciters.map((reciter) => (
+                <ReciterCard key={reciter.id} reciter={reciter} />
+              ))}
+            </div>
+          </section>
+
+          {mujawwadReciters.length > 0 && (
+            <section aria-labelledby="mujawwad-reciter-heading">
+              <h3 className="mb-4 font-kufi text-lg font-bold text-foreground">
+                <span id="mujawwad-reciter-heading">التجويد</span>
+                <span className="quran-reciter-section-count">{mujawwadReciters.length} قراء</span>
+              </h3>
+              <div className="quran-reciter-grid">
+                {mujawwadReciters.map((reciter) => (
+                  <ReciterCard key={reciter.id} reciter={reciter} />
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       </section>
     </PageLayout>

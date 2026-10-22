@@ -19,7 +19,7 @@ const footerLinks = {
 export function Footer() {
   return (
     <footer className="site-footer mt-8 border-t border-border bg-card/90">
-      <div className="container mx-auto px-4 py-10 lg:px-8">
+      <div className="w-full px-4 py-10 lg:px-8">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-1">
             <Link href="/" className="logo" aria-label="الصفحة الرئيسية">

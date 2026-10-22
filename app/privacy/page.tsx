@@ -9,9 +9,8 @@ export default function PrivacyPage() {
         subtitle="نحن نحترم خصوصيتك ونحمي بياناتك"
         icon={<Shield className="w-8 h-8 text-accent" />}
       />
-      <div className="container mx-auto px-4 lg:px-8 py-12 lg:py-16">
-        <div className="max-w-2xl mx-auto prose prose-sm dark:prose-invert">
-          <div className="bg-card rounded-2xl p-8 border border-border/50 space-y-6 font-cairo leading-relaxed text-muted-foreground">
+      <div className="w-full px-4 py-12 lg:px-8 lg:py-16">
+        <div className="prose prose-sm dark:prose-invert w-full space-y-8 font-cairo leading-relaxed text-muted-foreground">
             <section>
               <h2 className="font-kufi text-xl font-bold text-primary mb-3">جمع البيانات</h2>
               <p>يجمع موقع سُبُل البيانات اللازمة فقط لتقديم خدماته، مثل الموقع الجغرافي لحساب مواقيت الصلاة واتجاه القبلة. لا نبيع بياناتك لأي طرف ثالث.</p>
@@ -43,7 +42,6 @@ export default function PrivacyPage() {
               <h2 className="font-kufi text-xl font-bold text-primary mb-3">حقوقك</h2>
               <p>يمكنك في أي وقت تعديل أو حذف بياناتك الشخصية من خلال صفحة الحساب، أو التواصل معنا لطلب حذف حسابك بالكامل.</p>
             </section>
-          </div>
         </div>
       </div>
     </PageLayout>

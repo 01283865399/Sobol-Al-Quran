@@ -38,10 +38,10 @@ export default function SadaqahPage() {
         icon={<Bird className="w-8 h-8 text-accent" />}
       />
 
-      <div className="container mx-auto px-4 lg:px-8 py-12 lg:py-16">
+      <div className="w-full px-4 py-12 lg:px-8 lg:py-16">
         {/* Create memorial CTA */}
-        <div className="max-w-2xl mx-auto mb-12">
-          <div className="bg-card rounded-2xl p-8 border border-border/50 shadow-deep text-center">
+        <div className="mb-12 w-full">
+          <div className="border-b border-border/50 pb-8 text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/5 mb-4">
               <Plus className="w-8 h-8 text-primary" />
             </div>
@@ -62,8 +62,8 @@ export default function SadaqahPage() {
 
         {/* Form */}
         {showForm && (
-          <div className="max-w-2xl mx-auto mb-12 animate-fade-in-up">
-            <div className="bg-card rounded-2xl p-8 border border-border/50">
+          <div className="mb-12 w-full animate-fade-in-up">
+            <div className="border-y border-border/50 py-8">
               <h3 className="font-kufi text-xl font-bold text-primary mb-6">بيانات المتوفى</h3>
               <div className="space-y-4">
                 <div>
@@ -130,7 +130,7 @@ export default function SadaqahPage() {
         </div>
 
         {/* Tree of Sadaqah */}
-        <div className="max-w-3xl mx-auto">
+        <div className="w-full">
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/5 mb-3">
               <TreePine className="w-8 h-8 text-primary" />
@@ -140,7 +140,7 @@ export default function SadaqahPage() {
               كل من يتصدق باسم المتوفى تُضاف ورقة للشجرة
             </p>
           </div>
-          <div className="bg-card rounded-2xl p-6 border border-border/50 space-y-3">
+          <div className="space-y-3">
             {treeLeaves.map((leaf, index) => (
               <div
                 key={leaf.id}

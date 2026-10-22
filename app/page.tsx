@@ -35,7 +35,7 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <main className="container mx-auto px-4 pb-20 lg:px-8">
+      <main className="w-full px-4 pb-20 lg:px-8">
         <section className="hero home-hero pt-10 lg:pt-16">
           <div className="home-hero__content">
             <div className="home-hero__eyebrow">
@@ -119,7 +119,7 @@ export default function Home() {
         </section>
 
         <section className="pt-12 lg:pt-16">
-          <div className="glass-gold rounded-[30px] p-6 lg:p-8">
+          <div className="border-y border-gold/25 py-6 lg:py-8">
             <div className="mb-6 flex items-center justify-between gap-4">
               <div>
                 <p className="text-xs uppercase tracking-[0.2em] text-gold">Daily light</p>

@@ -5,22 +5,25 @@ import { Navbar } from '@/components/navbar';
 
 interface PageLayoutProps {
   children: React.ReactNode;
+  showHomeLink?: boolean;
 }
 
-export function PageLayout({ children }: PageLayoutProps) {
+export function PageLayout({ children, showHomeLink = true }: PageLayoutProps) {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen pt-2">
-        <div className="container mx-auto px-4 pt-4 lg:px-8">
-          <Link
-            href="/"
-            className="inline-flex min-h-10 items-center gap-2 rounded-full border border-border/70 bg-card/60 px-4 text-sm text-muted-foreground transition-colors hover:border-accent/50 hover:text-primary"
-          >
-            <Home className="h-4 w-4" aria-hidden="true" />
-            العودة للرئيسية
-          </Link>
-        </div>
+      <main className={`min-h-screen${showHomeLink ? ' pt-2' : ''}`}>
+        {showHomeLink && (
+          <div className="w-full px-4 pt-4 lg:px-8">
+            <Link
+              href="/"
+              className="inline-flex min-h-10 items-center gap-2 rounded-full border border-border/70 bg-card/60 px-4 text-sm text-muted-foreground transition-colors hover:border-accent/50 hover:text-primary"
+            >
+              <Home className="h-4 w-4" aria-hidden="true" />
+              العودة للرئيسية
+            </Link>
+          </div>
+        )}
         {children}
       </main>
     </>
@@ -38,8 +41,8 @@ export function PageHeader({ title, subtitle, icon }: PageHeaderProps) {
     <section className="relative overflow-hidden border-b border-border/80 py-12 lg:py-16">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(221,183,104,0.12),transparent_62%)]" />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(14,23,48,0.12),transparent_70%)]" />
-      <div className="container relative z-10 mx-auto px-4 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
+      <div className="relative z-10 w-full px-4 lg:px-8">
+        <div className="mx-auto text-center">
           {icon && (
             <div className="mx-auto mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[26px] border border-gold/30 bg-card text-gold">
               {icon}

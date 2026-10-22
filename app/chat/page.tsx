@@ -246,7 +246,7 @@ export default function ChatPage() {
 
   return (
     <PageLayout>
-      <div className="assistant-chat-page container mx-auto max-w-6xl px-4 py-7 lg:px-8 lg:py-10">
+      <div className="assistant-chat-page w-full px-4 py-7 lg:px-8 lg:py-10">
         <div className="assistant-chat__intro">
           <div className="assistant-chat__intro-icon" aria-hidden="true">
             <Sparkles />
@@ -260,7 +260,7 @@ export default function ChatPage() {
           </div>
         </div>
 
-        <section className="assistant-chat min-w-0 overflow-hidden rounded-[28px] border border-border/60 bg-card">
+        <section className="assistant-chat min-w-0 overflow-hidden">
           <div className="assistant-chat__header">
             <div className="assistant-chat__identity">
               <div className="assistant-chat__avatar" aria-hidden="true">

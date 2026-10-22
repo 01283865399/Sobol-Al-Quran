@@ -1,26 +1,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { IBM_Plex_Sans_Arabic, Reem_Kufi, Amiri } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AudioPlaybackProvider } from '@/components/audio-playback-provider';
-
-const ibm = IBM_Plex_Sans_Arabic({
-  subsets: ['arabic', 'latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-ui',
-});
-
-const reemKufi = Reem_Kufi({
-  subsets: ['arabic', 'latin'],
-  weight: ['500', '700'],
-  variable: '--font-kufi',
-});
-
-const amiri = Amiri({
-  subsets: ['arabic', 'latin'],
-  weight: ['400', '700'],
-  variable: '--font-quran',
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://subul.app'),
@@ -78,9 +59,7 @@ export default function RootLayout({
       <head>
         <meta name="theme-color" content="#0F5132" />
       </head>
-      <body
-        className={`${ibm.variable} ${reemKufi.variable} ${amiri.variable} font-tajawal`}
-      >
+      <body className="font-tajawal">
         <ThemeProvider
           attribute="class"
           defaultTheme="light"

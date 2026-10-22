@@ -124,8 +124,8 @@ export default function HadithPage() {
         />
       )}
 
-      <div className="container mx-auto px-4 py-4 lg:px-8 lg:py-6">
-        <section className="mb-5 rounded-2xl border border-border/50 bg-card p-4 sm:p-5" aria-label="البحث وتصفية كتب الحديث">
+      <div className="w-full px-4 py-4 lg:px-8 lg:py-6">
+        <section className="mb-5 border-b border-border/50 pb-5" aria-label="البحث وتصفية كتب الحديث">
           <div className="mb-3 flex items-center gap-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/5 text-primary">
               <ScrollText className="h-5 w-5" aria-hidden="true" />
@@ -189,13 +189,13 @@ export default function HadithPage() {
         </section>
 
         {/* Hadiths list */}
-        <div className="mx-auto max-w-5xl">
+        <div className="w-full">
           {filteredHadiths.length === 0 ? (
             <div className="bg-card rounded-2xl border border-border/50 p-8 text-center">
               <p className="text-muted-foreground font-cairo">لا توجد نتائج مطابقة</p>
             </div>
           ) : (
-            <ul className="overflow-hidden rounded-2xl border border-border/50 bg-card divide-y divide-border/50">
+            <ul className="divide-y divide-border/50">
             {filteredHadiths.map((hadith) => (
               <li key={hadith.id} className="px-4 py-4 transition-colors hover:bg-accent/[0.03] sm:px-5">
                 <div className="mb-3 flex items-center justify-between gap-3">
