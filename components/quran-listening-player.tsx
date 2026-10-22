@@ -384,6 +384,7 @@ export function QuranListeningPlayer({
       aria-label="مشغل الاستماع للقرآن"
       tabIndex={-1}
       className={`quran-listening${controlsVisible ? '' : ' is-idle'}`}
+      style={{ backgroundImage: ambience.fallback }}
       onPointerMove={handlePointerActivity}
       onPointerDown={() => {
         handlePointerActivity();

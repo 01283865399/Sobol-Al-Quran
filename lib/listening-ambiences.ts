@@ -7,9 +7,9 @@ import {
   Waves,
 } from 'lucide-react';
 
-const getMediaUrl = (path: string) =>
+const getMediaUrl = (asset: string, path: string) =>
   process.env.NODE_ENV === 'production'
-    ? `https://media.githubusercontent.com/media/01283865399/Sobol-Al-Quran/main/public${path}`
+    ? `/api/media/${asset}`
     : path;
 
 export const LISTENING_AMBIENCES = [
@@ -19,8 +19,8 @@ export const LISTENING_AMBIENCES = [
     icon: CloudRain,
     image:
       'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2400&q=85',
-    video: getMediaUrl('/assets/مطر.mp4'),
-    audioSource: getMediaUrl('/assets/مطر-صوت.mp3'),
+    video: getMediaUrl('rain', '/assets/مطر.mp4'),
+    audioSource: getMediaUrl('rain-audio', '/assets/مطر-صوت.mp3'),
     hasAudio: true,
     fallback: 'linear-gradient(145deg, #263b43, #101923 62%, #182c30)',
   },
@@ -30,8 +30,8 @@ export const LISTENING_AMBIENCES = [
     icon: Flame,
     image:
       'https://images.unsplash.com/photo-1414016642750-7fdd78dc33d9?auto=format&fit=crop&w=2400&q=85',
-    video: getMediaUrl('/assets/نار.mp4'),
-    audioSource: getMediaUrl('/assets/نار-صوت.mp3'),
+    video: getMediaUrl('fire', '/assets/نار.mp4'),
+    audioSource: getMediaUrl('fire-audio', '/assets/نار-صوت.mp3'),
     hasAudio: true,
     fallback: 'linear-gradient(145deg, #603b2d, #1c1717 62%, #36251d)',
   },
@@ -41,7 +41,7 @@ export const LISTENING_AMBIENCES = [
     icon: Trees,
     image:
       'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=2400&q=85',
-    video: getMediaUrl('/assets/ضباب.mp4'),
+    video: getMediaUrl('nature', '/assets/ضباب.mp4'),
     audioSource: null,
     hasAudio: false,
     fallback: 'linear-gradient(145deg, #29483f, #111b1b 62%, #22392f)',
@@ -52,7 +52,7 @@ export const LISTENING_AMBIENCES = [
     icon: Waves,
     image:
       'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=2400&q=85',
-    video: getMediaUrl('/assets/بحر.mp4'),
+    video: getMediaUrl('sea', '/assets/بحر.mp4'),
     audioSource: null,
     hasAudio: false,
     fallback: 'linear-gradient(145deg, #34565e, #101c25 62%, #1e3a43)',
@@ -63,7 +63,7 @@ export const LISTENING_AMBIENCES = [
     icon: CloudSun,
     image:
       'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=2400&q=85',
-    video: getMediaUrl('/assets/سماء.mp4'),
+    video: getMediaUrl('sky', '/assets/سماء.mp4'),
     audioSource: null,
     hasAudio: false,
     fallback: 'linear-gradient(145deg, #59666b, #1b2028 62%, #292c34)',

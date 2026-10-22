@@ -130,7 +130,7 @@ export function RadioListeningPlayer({
       aria-label="مشغل الإذاعة"
       tabIndex={-1}
       className="quran-listening"
-      style={{ backgroundImage: ambience.video ? undefined : ambience.fallback }}
+      style={{ backgroundImage: ambience.fallback }}
     >
       {ambience.video && (
         <video
