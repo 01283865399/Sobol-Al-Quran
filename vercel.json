@@ -1,0 +1,22 @@
+{
+  "framework": null,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    {
+      "source": "/:path((?!api/).*)",
+      "destination": "/index.html"
+    }
+  ],
+  "functions": {
+    "api/chat.ts": {
+      "maxDuration": 60
+    },
+    "api/radio.ts": {
+      "maxDuration": 30
+    },
+    "api/media/[asset].ts": {
+      "maxDuration": 60
+    }
+  }
+}

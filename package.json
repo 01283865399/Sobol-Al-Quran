@@ -13,7 +13,7 @@
     "build:desktop": "node windows-app/scripts/build-desktop.mjs",
     "desktop:dev": "concurrently -k \"vite --host 127.0.0.1\" \"wait-on tcp:5173 && electron windows-app/desktop/main.cjs\"",
     "desktop:pack": "npm run build && npm run build:desktop && node windows-app/scripts/package-desktop.mjs",
-    "lint": "eslint app components hooks lib netlify windows-app/desktop windows-app/scripts main.tsx vite.config.mts --ext .ts,.tsx,.mts,.cjs,.mjs",
+    "lint": "eslint api app components hooks lib netlify windows-app/desktop windows-app/scripts main.tsx vite.config.mts --ext .ts,.tsx,.mts,.cjs,.mjs",
     "typecheck": "tsc --noEmit"
   },
   "build": {

@@ -1,6 +1,6 @@
 # سُبُل
 
-تطبيق React مبني باستخدام Vite، ويستخدم React Router للتنقل وNetlify Functions لواجهات الخادم.
+تطبيق React مبني باستخدام Vite، ويستخدم React Router للتنقل. واجهات الخادم تعمل على Netlify Functions أو Vercel Functions.
 
 ## التشغيل المحلي
 
@@ -19,7 +19,11 @@ npm run build
 npm run preview
 ```
 
-ينتج البناء ملفات الموقع في `dist`. إعداد Netlify موجود في `netlify.toml`، ويحدد نشر `dist` ودوال `netlify/functions`.
+ينتج البناء ملفات الموقع في `dist`.
+
+- إعداد Netlify موجود في `netlify.toml`، ويحدد نشر `dist` ودوال `netlify/functions`.
+- إعداد Vercel موجود في `vercel.json`، ويحدد Vite ومجلد `dist`، مع واجهات الخادم في `api/` وإعادة توجيه مسارات React Router إلى التطبيق.
+- لتفعيل المحادثة على Vercel، أضف `GEMINI_API_KEY` في إعدادات المشروع ضمن Environment Variables، وحدد بيئة Production، ثم أعد النشر. لا تضع المفتاح في متغير يبدأ بـ `VITE_` أو في ملفات الواجهة.
 
 ## تطبيق ويندوز
 
