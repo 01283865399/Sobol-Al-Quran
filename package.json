@@ -2,6 +2,7 @@
   "name": "subul-react-vite",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "تطبيق سُبُل للقرآن الكريم",
   "author": "Sobul Quran",
   "main": "windows-app/desktop/main.cjs",
