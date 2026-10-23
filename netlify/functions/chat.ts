@@ -430,7 +430,9 @@ export default async function handler(request: Request): Promise<Response> {
               break;
             }
             if (event.event_type === 'interaction.completed') {
-              completed = event.interaction.status === 'completed';
+              completed =
+                event.interaction.status === 'completed' ||
+                (event.interaction.status === 'incomplete' && hasText);
               continue;
             }
             if (
