@@ -1,7 +1,7 @@
 import { GoogleGenAI } from '@google/genai';
 import { z } from 'zod';
-import { QURAN_RECITERS } from '../../lib/quran-api';
-import type { ChatSource } from '../../lib/chat-types';
+import { QURAN_RECITERS } from '../../lib/quran-api.js';
+import type { ChatSource } from '../../lib/chat-types.js';
 
 export const config = { path: '/api/chat' };
 

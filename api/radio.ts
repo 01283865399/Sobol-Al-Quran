@@ -1,4 +1,4 @@
-import radioHandler from '../netlify/functions/radio';
+import radioHandler from '../netlify/functions/radio.js';
 
 export const config = { maxDuration: 30 };
 

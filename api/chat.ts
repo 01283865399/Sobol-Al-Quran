@@ -1,4 +1,4 @@
-import chatHandler from '../netlify/functions/chat';
+import chatHandler from '../netlify/functions/chat.js';
 
 export const config = { maxDuration: 60 };
 

@@ -1,7 +1,7 @@
 import {
   radioProviderResponseSchema,
   type RadioStation,
-} from '../../lib/radio-types';
+} from '../../lib/radio-types.js';
 
 export const config = { path: '/api/radio' };
 
