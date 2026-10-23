@@ -1,13 +1,9 @@
-import 'server-only';
-
 import { GoogleGenAI } from '@google/genai';
-import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { fetchSurahText, QURAN_RECITERS, searchQuran } from '@/lib/quran-api';
+import { QURAN_RECITERS } from '@/lib/quran-api';
 import type { ChatSource } from '@/lib/chat-types';
 
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
+export const config = { path: '/api/chat' };
 
 const MAX_BODY_BYTES = 32 * 1024;
 const MAX_MESSAGES = 50;
@@ -15,7 +11,6 @@ const MAX_MESSAGE_LENGTH = 2000;
 const MAX_HISTORY_LENGTH = 20000;
 const GEMINI_MODEL = 'gemini-3-flash-preview';
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const SUNNAH_API_KEY = process.env.SUNNAH_API_KEY;
 
 const requestSchema = z
   .object({
@@ -44,47 +39,8 @@ const requestSchema = z
     }
   });
 
-const sunnahGradeSchema = z
-  .object({
-    graded_by: z.string().optional(),
-    grade: z.string().optional(),
-  })
-  .passthrough();
-
-const sunnahHadithSchema = z
-  .object({
-    lang: z.string(),
-    body: z.string(),
-    grades: z.array(sunnahGradeSchema).optional(),
-  })
-  .passthrough();
-
-const sunnahRecordSchema = z
-  .object({
-    collection: z.string(),
-    hadithNumber: z.union([z.string(), z.number()]),
-    hadith: z.array(sunnahHadithSchema),
-  })
-  .passthrough();
-
-const sunnahResponseSchema = z
-  .object({
-    data: z.array(sunnahRecordSchema),
-  })
-  .passthrough();
-
-interface HadithReference {
-  collection: string;
-  number: string;
-}
-
-interface HadithLookup {
-  source: ChatSource;
-  evidence: string;
-}
-
 function jsonError(status: number, code: string, message: string, retryAfter?: number) {
-  return NextResponse.json(
+  return Response.json(
     { error: { code, message } },
     {
       status,
@@ -126,237 +82,6 @@ async function readLimitedBody(request: Request): Promise<string | null> {
   return new TextDecoder().decode(bodyBytes);
 }
 
-function normalizeDigits(value: string): string {
-  return value.replace(/[٠-٩۰-۹]/g, (digit) => {
-    const code = digit.charCodeAt(0);
-    return String(code >= 0x06f0 ? code - 0x06f0 : code - 0x0660);
-  });
-}
-
-function parseHadithReference(question: string): HadithReference | null {
-  const normalizedQuestion = normalizeDigits(question);
-  const collections: Array<{ pattern: RegExp; id: string }> = [
-    { pattern: /(?:صحيح\s+)?البخاري|bukhari/i, id: 'bukhari' },
-    { pattern: /(?:صحيح\s+)?مسلم|muslim/i, id: 'muslim' },
-    { pattern: /أبو\s+داود|ابو\s+داود|أبي\s+داود|ابي\s+داود|abudawud|abu\s+dawud/i, id: 'abudawud' },
-    { pattern: /الترمذي|جامع\s+الترمذي|tirmidhi/i, id: 'tirmidhi' },
-    { pattern: /النسائي|سنن\s+النسائي|nasai|nasa'i/i, id: 'nasai' },
-    { pattern: /ابن\s+ماجه|ابن\s+ماجة|ibn\s+majah|ibnmajah/i, id: 'ibnmajah' },
-  ];
-
-  for (const collection of collections) {
-    const match = collection.pattern.exec(normalizedQuestion);
-    if (!match || match.index === undefined) continue;
-
-    const followingText = normalizedQuestion.slice(match.index + match[0].length);
-    const number = followingText.match(
-      /^\s*(?:(?:رقم|حديث(?:\s+رقم)?|no\.?)\s*|[:#-]\s*)?(\d{1,6})\b/i
-    )?.[1];
-
-    if (number) return { collection: collection.id, number };
-  }
-
-  return null;
-}
-
-function cleanSourceText(value: string): string {
-  return value
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<[^>]*>/g, ' ')
-    .replace(/&nbsp;/gi, ' ')
-    .replace(/&quot;/gi, '"')
-    .replace(/&#39;|&apos;/gi, "'")
-    .replace(/&amp;/gi, '&')
-    .replace(/[ \t]+/g, ' ')
-    .trim();
-}
-
-async function retrieveHadith(
-  reference: HadithReference,
-  apiKey: string
-): Promise<HadithLookup | null> {
-  const params = new URLSearchParams({
-    refs: `${reference.collection}:${reference.number}`,
-  });
-  const response = await fetch(`https://api.sunnah.com/v1/hadiths/refs?${params}`, {
-    headers: { 'X-API-Key': apiKey },
-    cache: 'no-store',
-    signal: AbortSignal.timeout(8000),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Sunnah.com returned HTTP ${response.status}`);
-  }
-
-  const payload: unknown = await response.json();
-  const parsed = sunnahResponseSchema.safeParse(payload);
-  if (!parsed.success) {
-    throw new Error('Sunnah.com returned an invalid hadith response');
-  }
-
-  const record = parsed.data.data.find(
-    (item) =>
-      item.collection.toLowerCase() === reference.collection &&
-      String(item.hadithNumber) === reference.number
-  );
-  if (!record) return null;
-
-  const languageRecord =
-    record.hadith.find((item) => item.lang.toLowerCase().startsWith('ar')) ??
-    record.hadith.find((item) => item.lang.toLowerCase().startsWith('en'));
-  if (!languageRecord) return null;
-
-  const excerpt = cleanSourceText(languageRecord.body).slice(0, 1800);
-  if (!excerpt) return null;
-
-  const grades = (languageRecord.grades ?? [])
-    .flatMap((grade) =>
-      grade.grade && grade.graded_by
-        ? [{ grade: grade.grade.slice(0, 100), gradedBy: grade.graded_by.slice(0, 100) }]
-        : []
-    )
-    .slice(0, 3);
-  const referenceLabel = `${reference.collection}:${reference.number}`;
-
-  return {
-    source: {
-      kind: 'hadith',
-      title: 'Sunnah.com',
-      reference: referenceLabel,
-      url: `https://sunnah.com/${referenceLabel}`,
-      excerpt,
-      ...(grades.length > 0 ? { grades } : {}),
-    },
-    evidence: [
-      `Reference: ${referenceLabel}`,
-      `Language: ${languageRecord.lang}`,
-      `Text from Sunnah.com: ${excerpt}`,
-      ...(grades.length > 0
-        ? [`Grades recorded by the source: ${grades.map(({ grade, gradedBy }) => `${grade} — ${gradedBy}`).join('; ')}`]
-        : ['No grading data was returned for this language.']),
-    ].join('\n'),
-  };
-}
-
-function isQuranQuestion(question: string): boolean {
-  return /القرآن|قرآن|آية|آيات|سورة|تفسير|quran|verse|surah|tafsir/i.test(question);
-}
-
-function isExactQuranTextRequest(question: string): boolean {
-  return (
-    isQuranQuestion(question) &&
-    /نص|اقتبس|اكتب|اذكر|اقرأ|بالكامل|quote|verbatim|exact verse/i.test(question)
-  );
-}
-
-function getQuranSearchTerm(question: string): string | null {
-  const quotedText = question.match(/[«“"]([^»”"]{2,80})[»”"]/);
-  if (quotedText) return quotedText[1].trim();
-
-  const normalized = question
-    .normalize('NFD')
-    .replace(/[\u064b-\u065f\u0670]/g, '')
-    .replace(/[أإآ]/g, 'ا');
-  const stopWords = new Set([
-    'القران', 'الكريم', 'ايه', 'الاية', 'ايات', 'سوره', 'سورة', 'تفسير',
-    'معنى', 'اشرح', 'ما', 'ماذا', 'كيف', 'هل', 'عن', 'في', 'من', 'الى',
-    'على', 'هو', 'هي', 'هذا', 'هذه', 'الذي', 'التي', 'ان', 'يقول', 'تقول',
-    'ذكر', 'اذكر', 'اريد', 'لي', 'لنا', 'هل', 'please', 'quran', 'verse',
-  ]);
-  const words = normalized.match(/[\u0621-\u064a]{3,}/g) ?? [];
-  const searchTerm = words.reverse().find((word) => !stopWords.has(word));
-  return searchTerm ?? null;
-}
-
-function quranSource(
-  surahNumber: number,
-  surahName: string,
-  ayahNumber: number,
-  globalAyahNumber: number,
-  text: string
-): ChatSource {
-  return {
-    kind: 'quran',
-    title: 'AlQuran.cloud — النص العثماني',
-    reference: `${surahName}، الآية ${ayahNumber}`,
-    url: `https://api.alquran.cloud/v1/ayah/${globalAyahNumber}/quran-uthmani`,
-    excerpt: text,
-  };
-}
-
-async function retrieveQuran(question: string): Promise<ChatSource[]> {
-  if (!isQuranQuestion(question)) return [];
-
-  const numericReference = normalizeDigits(question).match(
-    /(?:^|\D)(\d{1,3})\s*[:/]\s*(\d{1,3})(?!\d)/
-  );
-  const ayatAlKursi = /آية\s+الكرسي|اية\s+الكرسي|ayat\s+al[- ]kursi/i.test(question);
-
-  if (numericReference || ayatAlKursi) {
-    const surahNumber = ayatAlKursi ? 2 : Number(numericReference?.[1]);
-    const ayahNumber = ayatAlKursi ? 255 : Number(numericReference?.[2]);
-    const surah = await fetchSurahText(
-      surahNumber,
-      AbortSignal.timeout(8000),
-      'no-store'
-    );
-    const ayah = surah.ayahs.find((item) => item.numberInSurah === ayahNumber);
-
-    return ayah
-      ? [
-          quranSource(
-            surah.number,
-            surah.name,
-            ayah.numberInSurah,
-            ayah.number,
-            ayah.text
-          ),
-        ]
-      : [];
-  }
-
-  const searchTerm = getQuranSearchTerm(question);
-  if (!searchTerm) return [];
-
-  const result = await searchQuran(
-    searchTerm,
-    AbortSignal.timeout(8000),
-    'no-store'
-  );
-
-  return result.matches.slice(0, 4).map((match) =>
-    quranSource(
-      match.surah.number,
-      match.surah.name,
-      match.numberInSurah,
-      match.number,
-      match.text
-    )
-  );
-}
-
-function getWebsiteSources(question: string): ChatSource[] {
-  const sources: ChatSource[] = [];
-  const entries = [
-    { pattern: /القرآن|قرآن|quran|المصحف/i, title: 'القرآن الكريم', url: '/quran' },
-    { pattern: /حديث|hadith/i, title: 'الحديث الشريف', url: '/hadith' },
-    { pattern: /سبحة|تسبيح|tasbih/i, title: 'السبحة الإلكترونية', url: '/tasbih' },
-  ];
-
-  for (const entry of entries) {
-    if (entry.pattern.test(question)) {
-      sources.push({
-        kind: 'website',
-        title: 'موقع سُبُل',
-        reference: entry.title,
-        url: entry.url,
-      });
-    }
-  }
-
-  return sources.slice(0, 3);
-}
-
 function getErrorStatus(error: unknown): number | undefined {
   if (
     typeof error === 'object' &&
@@ -391,7 +116,7 @@ function getErrorCode(error: unknown): string | undefined {
 }
 
 function staticResponse(answer: string, sources: ChatSource[] = []) {
-  return NextResponse.json({ answer, answerType: 'notice', sources });
+  return Response.json({ answer, answerType: 'notice', sources });
 }
 
 function normalizeSiteText(value: string): string {
@@ -475,25 +200,16 @@ const SITE_SECTIONS: Array<{
     answer: 'تجد السبحة الإلكترونية في صفحة مستقلة؛ يمكنك اختيار الذكر واستخدام العداد.',
     source: { kind: 'website', title: 'السبحة الإلكترونية', reference: 'اختيار الذكر والعداد', url: '/tasbih' },
   },
-  {
-    keywords: ['فتوي', 'فتوى', 'فتاوي', 'فتاوى'],
-    answer: 'تضم صفحة الفتاوى تصنيفات وبحثًا في الأسئلة المعروضة. لا تعتبر إجاباتها بديلًا عن سؤال أهل العلم في المسائل الشخصية.',
-    source: { kind: 'website', title: 'الفتاوى', reference: 'التصنيفات والبحث', url: '/fatwa' },
-  },
-  {
-    keywords: ['صدقه جاريه', 'صدقة جارية', 'صدقه', 'صدقة'],
-    answer: 'تتيح صفحة الصدقة الجارية إنشاء صفحة تذكارية ومشاركتها.',
-    source: { kind: 'website', title: 'الصدقة الجارية', reference: 'إنشاء صفحة ومشاركتها', url: '/sadaqah' },
-  },
-  {
-    keywords: ['حسابي', 'حساب', 'مفضلات', 'المفضله', 'الخصوصيه'],
-    answer: 'صفحة حسابي تعمل كتجربة زائر، وتوضح أن المفضلات تحفظ محليًا في المتصفح ولا توجد مصادقة حسابات حقيقية مفعلة.',
-    source: { kind: 'website', title: 'حسابي', reference: 'حساب زائر وحفظ محلي', url: '/account' },
-  },
 ];
 
 function getSiteAnswer(question: string): { answer: string; sources: ChatSource[] } | null {
   const normalizedQuestion = normalizeSiteText(question);
+  if (/(?:فتوي|فتوى|فتاوي|فتاوى|صدقه جاريه|صدقة جارية|صدقه|صدقة|حسابي|مفضلات|المفضله)/i.test(normalizedQuestion)) {
+    return {
+      answer: 'هذا القسم غير متاح حاليًا ضمن الصفحات المنشورة في الموقع.',
+      sources: [],
+    };
+  }
   const asksForReciters = /(?:^|\s)(?:القارئ|قارئ|قاري|القراء|قراء|قراؤ|reciter|reciters)(?:$|\s)/i
     .test(normalizedQuestion);
 
@@ -539,15 +255,13 @@ function getSiteAnswer(question: string): { answer: string; sources: ChatSource[
 
   if (/محتوي|الموقع|موقع|خدمات|تعملوا|يوجد|عندكم/i.test(question)) {
     return {
-      answer: 'يضم الموقع الاستماع لقراء القرآن واختيار السور، ومصحفًا للقراءة والبحث، وإذاعة القرآن الكريم، وصفحات للحديث والفتاوى والسبحة والصدقة الجارية وحساب الزائر. اختر القسم الذي تريده:',
+      answer: 'يضم الموقع الاستماع لقراء القرآن واختيار السور، ومصحفًا للقراءة والبحث، وإذاعة القرآن الكريم، وصفحات للحديث والسبحة. اختر القسم الذي تريده:',
       sources: [
         { kind: 'website', title: 'الاستماع والقراء', reference: 'القرآن الكريم', url: '/quran' },
         { kind: 'website', title: 'المصحف للقراءة', reference: 'قراءة وبحث', url: '/quran/read' },
         { kind: 'website', title: 'إذاعة القرآن الكريم', reference: 'المحطات', url: '/radio' },
         { kind: 'website', title: 'الحديث الشريف', reference: 'الحديث', url: '/hadith' },
-        { kind: 'website', title: 'الفتاوى', reference: 'الأسئلة الشرعية', url: '/fatwa' },
         { kind: 'website', title: 'السبحة الإلكترونية', reference: 'الأذكار والعداد', url: '/tasbih' },
-        { kind: 'website', title: 'الصدقة الجارية', reference: 'إنشاء صفحة', url: '/sadaqah' },
       ],
     };
   }
@@ -566,10 +280,8 @@ function getSiteContext(): string {
     '- /quran/read: المصحف للقراءة، مع السور والبحث والتلاوة الصوتية.',
     '- /radio: محطات إذاعية قرآنية؛ قائمة المحطات تُحمّل من خدمة خارجية وقد تتغير.',
     '- /hadith: صفحة الحديث وخيارات البحث؛ لا تدّع أن المحتوى المعروض قاعدة شاملة.',
-    '- /fatwa: تصنيفات وبحث ضمن فتاوى معروضة كعينات؛ لا تقدمها كفتوى شخصية أو مرجع شامل.',
     '- /tasbih: سبحة إلكترونية، اختيار ذكر وعداد.',
-    '- /sadaqah: واجهة نموذج لإنشاء صفحة صدقة جارية؛ لا تدّع حفظًا أو نشرًا دائمًا غير موجود.',
-    '- /account: تجربة زائر؛ الحفظ محلي في المتصفح ولا توجد مصادقة حقيقية مفعلة.',
+    'صفحات الفتاوى والصدقة الجارية والحساب غير متاحة؛ لا توجّه المستخدم إليها ولا تدّع وجودها.',
     '- /privacy و/terms: صفحات الخصوصية وشروط الاستخدام.',
     'هذه قائمة القراء الحية المستخرجة من بيانات التطبيق؛ لا تضف قارئًا غير موجود فيها ولا تخترع مسارات:',
     reciters,
@@ -610,7 +322,11 @@ function encodeStreamEvent(event: object): Uint8Array {
   return new TextEncoder().encode(`data: ${JSON.stringify(event)}\n\n`);
 }
 
-export async function POST(request: Request) {
+export default async function handler(request: Request): Promise<Response> {
+  if (request.method !== 'POST') {
+    return jsonError(405, 'method_not_allowed', 'استخدم طلب POST لإرسال رسالة.');
+  }
+
   const contentLength = Number(request.headers.get('content-length') ?? 0);
   if (Number.isFinite(contentLength) && contentLength > MAX_BODY_BYTES) {
     return jsonError(413, 'request_too_large', 'حجم الطلب أكبر من الحد المسموح.');

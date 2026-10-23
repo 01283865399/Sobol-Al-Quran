@@ -6,7 +6,7 @@ import { ScrollText, Search, BookMarked, CheckCircle2, Headphones } from 'lucide
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { HadithListeningPlayer } from '@/components/hadith-listening-player';
-import { useAudioPlayback } from '@/components/audio-playback-provider';
+import { useAudioNavigation } from '@/components/audio-playback-provider';
 import { cn } from '@/lib/utils';
 
 interface HadithBook {
@@ -80,9 +80,9 @@ const sampleHadiths: HadithItem[] = [
 ];
 
 const gradeColors: Record<string, string> = {
-  'صحيح': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-  'حسن': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-  'ضعيف': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+  'صحيح': 'bg-green-100 text-green-800',
+  'حسن': 'bg-blue-100 text-blue-800',
+  'ضعيف': 'bg-red-100 text-red-800',
 };
 
 function normalizeSearchText(value: string): string {
@@ -96,7 +96,7 @@ function normalizeSearchText(value: string): string {
 }
 
 export default function HadithPage() {
-  const { mainPlayerOpen, setMainPlayerOpen, setPlayerRoute } = useAudioPlayback();
+  const { mainPlayerOpen, setMainPlayerOpen, setPlayerRoute } = useAudioNavigation();
   const [search, setSearch] = React.useState('');
   const [selectedBook, setSelectedBook] = React.useState('all');
   const [selectedHadith, setSelectedHadith] = React.useState<HadithItem | null>(null);
@@ -125,7 +125,7 @@ export default function HadithPage() {
       )}
 
       <div className="w-full px-4 py-4 lg:px-8 lg:py-6">
-        <section className="mb-5 border-b border-border/50 pb-5" aria-label="البحث وتصفية كتب الحديث">
+        <section className="hadith-filters mb-5" aria-label="البحث وتصفية كتب الحديث">
           <div className="mb-3 flex items-center gap-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/5 text-primary">
               <ScrollText className="h-5 w-5" aria-hidden="true" />
@@ -195,9 +195,9 @@ export default function HadithPage() {
               <p className="text-muted-foreground font-cairo">لا توجد نتائج مطابقة</p>
             </div>
           ) : (
-            <ul className="divide-y divide-border/50">
+            <ul className="hadith-list">
             {filteredHadiths.map((hadith) => (
-              <li key={hadith.id} className="px-4 py-4 transition-colors hover:bg-accent/[0.03] sm:px-5">
+              <li key={hadith.id} className="hadith-list__item px-4 py-4 transition-colors hover:bg-accent/[0.03] sm:px-5">
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-2">
                     <span className="inline-flex h-7 min-w-7 items-center justify-center rounded-lg bg-accent/10 px-2 font-kufi text-xs font-bold text-accent">

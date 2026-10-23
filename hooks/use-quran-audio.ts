@@ -21,6 +21,7 @@ export function useQuranAudio() {
   const playbackAttemptRef = React.useRef(0);
   const playlistRequestRef = React.useRef(0);
   const selectedReciterRef = React.useRef('ar.alafasy');
+  const lastReportedTimeRef = React.useRef(0);
 
   const [selectedReciter, setSelectedReciter] = React.useState(selectedReciterRef.current);
   const [currentSurahNumber, setCurrentSurahNumber] = React.useState<number | null>(null);
@@ -65,6 +66,7 @@ export function useQuranAudio() {
     sourceIndexRef.current = sourceIndex;
     autoplayRef.current = autoplay;
     pendingSeekRef.current = seekTo > 0 ? seekTo : null;
+    lastReportedTimeRef.current = seekTo;
     setCurrentTrackIndex(trackIndex);
     setCurrentTime(seekTo);
     setDuration(0);
@@ -122,11 +124,21 @@ export function useQuranAudio() {
       if (pendingSeek !== null && Number.isFinite(audio.duration)) {
         audio.currentTime = Math.min(pendingSeek, audio.duration);
         pendingSeekRef.current = null;
-        setCurrentTime(audio.currentTime);
       }
+      lastReportedTimeRef.current = audio.currentTime;
+      setCurrentTime(audio.currentTime);
       setIsLoading(false);
     };
-    const onTimeUpdate = () => setCurrentTime(audio.currentTime);
+    const onTimeUpdate = () => {
+      if (
+        Math.abs(audio.currentTime - lastReportedTimeRef.current) < 0.5 &&
+        audio.currentTime !== audio.duration
+      ) {
+        return;
+      }
+      lastReportedTimeRef.current = audio.currentTime;
+      setCurrentTime(audio.currentTime);
+    };
     const onWaiting = () => setIsLoading(true);
     const onPlaying = () => {
       setIsLoading(false);
@@ -337,6 +349,7 @@ export function useQuranAudio() {
     setIsPlaying(false);
     setIsLoading(false);
     setAudioError('');
+    lastReportedTimeRef.current = 0;
     setCurrentTime(0);
     setDuration(0);
   }, []);
@@ -345,6 +358,7 @@ export function useQuranAudio() {
     const audio = audioRef.current;
     if (audio && Number.isFinite(audio.duration)) {
       audio.currentTime = Math.max(0, Math.min(time, audio.duration));
+      lastReportedTimeRef.current = audio.currentTime;
       setCurrentTime(audio.currentTime);
     }
   }, []);

@@ -12,9 +12,12 @@ import {
   SkipForward,
   Star,
   Volume2,
+  VolumeX,
   X,
 } from 'lucide-react';
 import { LISTENING_AMBIENCES } from '@/lib/listening-ambiences';
+import { useGlassPlayerSize } from '@/hooks/use-glass-player-size';
+import { useGeneratedAmbience } from '@/hooks/use-generated-ambience';
 
 export interface HadithAudioItem {
   id: number;
@@ -42,15 +45,20 @@ export function HadithListeningPlayer({
   hadiths,
   onSelectHadith,
 }: HadithListeningPlayerProps) {
+  const { style: playerSizeStyle, handles: resizeHandles } = useGlassPlayerSize();
   const [ambienceId, setAmbienceId] = React.useState<(typeof LISTENING_AMBIENCES)[number]['id']>('rain');
   const [ambienceMenuOpen, setAmbienceMenuOpen] = React.useState(false);
   const [playlistOpen, setPlaylistOpen] = React.useState(false);
+  const [volumeOpen, setVolumeOpen] = React.useState(false);
+  const [ambienceVolume, setAmbienceVolume] = React.useState(0.16);
+  const [ambienceSoundEnabled, setAmbienceSoundEnabled] = React.useState(false);
   const [rateIndex, setRateIndex] = React.useState(1);
   const [repeat, setRepeat] = React.useState(false);
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [error, setError] = React.useState('');
   const [favorites, setFavorites] = React.useState<number[]>([]);
   const [favoriteReady, setFavoriteReady] = React.useState(false);
+  const generatedAmbience = useGeneratedAmbience();
   const dialogRef = React.useRef<HTMLDivElement>(null);
   const backgroundVideoRef = React.useRef<HTMLVideoElement>(null);
   const utteranceRef = React.useRef<SpeechSynthesisUtterance | null>(null);
@@ -108,16 +116,23 @@ export function HadithListeningPlayer({
   }, [ambience.id, ambience.video, open]);
 
   React.useEffect(() => {
+    if (open) return;
+    generatedAmbience.stop();
+    setAmbienceSoundEnabled(false);
+  }, [generatedAmbience, open]);
+
+  React.useEffect(() => {
     if (!open) return;
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return;
       if (playlistOpen) setPlaylistOpen(false);
       else if (ambienceMenuOpen) setAmbienceMenuOpen(false);
+      else if (volumeOpen) setVolumeOpen(false);
       else onClose();
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [open, playlistOpen, ambienceMenuOpen, onClose]);
+  }, [open, playlistOpen, ambienceMenuOpen, volumeOpen, onClose]);
 
   React.useEffect(() => () => {
     window.speechSynthesis?.cancel();
@@ -260,6 +275,17 @@ export function HadithListeningPlayer({
                     className="quran-listening__menu-option"
                     onClick={() => {
                       setAmbienceId(option.id);
+                      if (option.video && ambienceVolume > 0) {
+                        void generatedAmbience.play(option.id, ambienceVolume).then(() => {
+                          setAmbienceSoundEnabled(true);
+                        }).catch((playbackError: unknown) => {
+                          setAmbienceSoundEnabled(false);
+                          console.error(`Unable to play hadith ambience sound: ${option.id}`, playbackError);
+                        });
+                      } else {
+                        generatedAmbience.stop();
+                        setAmbienceSoundEnabled(false);
+                      }
                       setAmbienceMenuOpen(false);
                     }}
                   >
@@ -275,7 +301,7 @@ export function HadithListeningPlayer({
         <span className="quran-listening__brand" aria-label="سُبُل">سُبُل</span>
       </header>
 
-      <div className="quran-listening__main">
+      <div id="glass-listening-player" className="quran-listening__main" style={playerSizeStyle}>
         <div className="quran-listening__track">
           <button
             type="button"
@@ -371,12 +397,49 @@ export function HadithListeningPlayer({
             <span>قائمة الأحاديث</span>
           </button>
           <div className="quran-listening__volume-wrap">
-            <span className="quran-listening__utility" aria-label="قراءة صوتية من الجهاز">
-              <Volume2 aria-hidden="true" />
-              <span>صوت الجهاز</span>
-            </span>
+            <button
+              type="button"
+              className="quran-listening__utility"
+              onClick={() => setVolumeOpen((value) => !value)}
+              aria-expanded={volumeOpen}
+              aria-label="مستوى صوت الخلفية"
+            >
+              {ambienceSoundEnabled ? <Volume2 aria-hidden="true" /> : <VolumeX aria-hidden="true" />}
+              <span>صوت الخلفية</span>
+            </button>
+            {volumeOpen && (
+              <label className="quran-listening__volume">
+                <Volume2 aria-hidden="true" />
+                <span className="sr-only">مستوى صوت الخلفية</span>
+                <input
+                  type="range"
+                  min={0}
+                  max={1}
+                  step={0.01}
+                  value={ambienceVolume}
+                  onChange={(event) => {
+                    const nextVolume = Number(event.target.value);
+                    setAmbienceVolume(nextVolume);
+                    generatedAmbience.setVolume(nextVolume);
+                    if (nextVolume === 0) {
+                      generatedAmbience.stop();
+                      setAmbienceSoundEnabled(false);
+                    } else if (ambience.video && !ambienceSoundEnabled) {
+                      void generatedAmbience.play(ambience.id, nextVolume).then(() => {
+                        setAmbienceSoundEnabled(true);
+                      }).catch((playbackError: unknown) => {
+                        setAmbienceSoundEnabled(false);
+                        console.error(`Unable to play hadith ambience sound: ${ambience.id}`, playbackError);
+                      });
+                    }
+                  }}
+                  aria-label="مستوى صوت الخلفية"
+                />
+              </label>
+            )}
           </div>
         </footer>
+        {resizeHandles}
       </div>
 
       {playlistOpen && (

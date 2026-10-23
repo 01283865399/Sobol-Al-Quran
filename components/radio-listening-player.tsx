@@ -18,6 +18,8 @@ import {
   X,
 } from 'lucide-react';
 import { LISTENING_AMBIENCES } from '@/lib/listening-ambiences';
+import { useGlassPlayerSize } from '@/hooks/use-glass-player-size';
+import { useGeneratedAmbience } from '@/hooks/use-generated-ambience';
 import type { RadioStation } from '@/lib/radio-types';
 
 interface RadioListeningPlayerProps {
@@ -47,11 +49,15 @@ export function RadioListeningPlayer({
   volume,
   onVolumeChange,
 }: RadioListeningPlayerProps) {
+  const { style: playerSizeStyle, handles: resizeHandles } = useGlassPlayerSize();
   const [ambienceId, setAmbienceId] = React.useState<(typeof LISTENING_AMBIENCES)[number]['id']>('rain');
   const [ambienceMenuOpen, setAmbienceMenuOpen] = React.useState(false);
   const [playlistOpen, setPlaylistOpen] = React.useState(false);
   const [volumeOpen, setVolumeOpen] = React.useState(false);
+  const [ambienceVolume, setAmbienceVolume] = React.useState(0.16);
+  const [ambienceSoundEnabled, setAmbienceSoundEnabled] = React.useState(false);
   const [favorites, setFavorites] = React.useState<number[]>([]);
+  const generatedAmbience = useGeneratedAmbience();
   const dialogRef = React.useRef<HTMLDivElement>(null);
   const backgroundVideoRef = React.useRef<HTMLVideoElement>(null);
   const currentIndex = stations.findIndex((item) => item.id === station.id);
@@ -101,6 +107,12 @@ export function RadioListeningPlayer({
     });
     return () => video.pause();
   }, [ambience.id, ambience.video, open]);
+
+  React.useEffect(() => {
+    if (open) return;
+    generatedAmbience.stop();
+    setAmbienceSoundEnabled(false);
+  }, [generatedAmbience, open]);
 
   React.useEffect(() => {
     if (!open) return;
@@ -187,6 +199,17 @@ export function RadioListeningPlayer({
                     className="quran-listening__menu-option"
                     onClick={() => {
                       setAmbienceId(option.id);
+                      if (option.video && ambienceVolume > 0) {
+                        void generatedAmbience.play(option.id, ambienceVolume).then(() => {
+                          setAmbienceSoundEnabled(true);
+                        }).catch((error: unknown) => {
+                          setAmbienceSoundEnabled(false);
+                          console.error(`Unable to play radio ambience sound: ${option.id}`, error);
+                        });
+                      } else {
+                        generatedAmbience.stop();
+                        setAmbienceSoundEnabled(false);
+                      }
                       setAmbienceMenuOpen(false);
                     }}
                   >
@@ -202,7 +225,7 @@ export function RadioListeningPlayer({
         <span className="quran-listening__brand" aria-label="سُبُل">سُبُل</span>
       </header>
 
-      <div className="quran-listening__main">
+      <div id="glass-listening-player" className="quran-listening__main" style={playerSizeStyle}>
         <div className="quran-listening__track">
           <button
             type="button"
@@ -291,26 +314,63 @@ export function RadioListeningPlayer({
               aria-expanded={volumeOpen}
               aria-label="خيارات مستوى الصوت"
             >
-              {volume === 0 ? <VolumeX aria-hidden="true" /> : <Volume2 aria-hidden="true" />}
+              {volume === 0 && (!ambienceSoundEnabled || ambienceVolume === 0)
+                ? <VolumeX aria-hidden="true" />
+                : <Volume2 aria-hidden="true" />}
               <span>الصوت</span>
             </button>
             {volumeOpen && (
-              <label className="quran-listening__volume">
-                <Headphones aria-hidden="true" />
-                <span className="sr-only">مستوى الصوت</span>
-                <input
-                  type="range"
-                  min={0}
-                  max={100}
-                  step={1}
-                  value={volume}
-                  onChange={(event) => onVolumeChange(Number(event.target.value))}
-                  aria-label="مستوى الصوت"
-                />
-              </label>
+              <div className="quran-listening__volume">
+                <label className="quran-listening__volume-row">
+                  <Headphones aria-hidden="true" />
+                  <span>صوت الإذاعة</span>
+                  <span>{volume}%</span>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    step={1}
+                    value={volume}
+                    onChange={(event) => onVolumeChange(Number(event.target.value))}
+                    aria-label="مستوى صوت الإذاعة"
+                  />
+                </label>
+                {ambience.video && (
+                  <label className="quran-listening__volume-row">
+                    <Radio aria-hidden="true" />
+                    <span>صوت الخلفية</span>
+                    <span>{Math.round(ambienceVolume * 100)}%</span>
+                    <input
+                      type="range"
+                      min={0}
+                      max={1}
+                      step={0.01}
+                      value={ambienceVolume}
+                      onChange={(event) => {
+                        const nextVolume = Number(event.target.value);
+                        setAmbienceVolume(nextVolume);
+                        generatedAmbience.setVolume(nextVolume);
+                        if (nextVolume === 0) {
+                          generatedAmbience.stop();
+                          setAmbienceSoundEnabled(false);
+                        } else if (!ambienceSoundEnabled) {
+                          void generatedAmbience.play(ambience.id, nextVolume).then(() => {
+                            setAmbienceSoundEnabled(true);
+                          }).catch((error: unknown) => {
+                            setAmbienceSoundEnabled(false);
+                            console.error(`Unable to play radio ambience sound: ${ambience.id}`, error);
+                          });
+                        }
+                      }}
+                      aria-label="مستوى صوت الخلفية"
+                    />
+                  </label>
+                )}
+              </div>
             )}
           </div>
         </footer>
+        {resizeHandles}
       </div>
 
       {playlistOpen && (

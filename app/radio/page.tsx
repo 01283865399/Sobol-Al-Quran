@@ -6,7 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { RadioListeningPlayer } from '@/components/radio-listening-player';
 import { radioListResponseSchema, type RadioStation } from '@/lib/radio-types';
-import { useAudioPlayback } from '@/components/audio-playback-provider';
+import {
+  useAudioNavigation,
+  useRadioPlayback,
+} from '@/components/audio-playback-provider';
 import {
   Headphones,
   ChevronLeft,
@@ -62,10 +65,12 @@ export default function RadioPage() {
     playRadioStation: playStation,
     toggleRadioPlayback,
     setRadioVolume: setVolume,
+  } = useRadioPlayback();
+  const {
     mainPlayerOpen,
     setMainPlayerOpen,
     setPlayerRoute,
-  } = useAudioPlayback();
+  } = useAudioNavigation();
   const [stations, setStations] = React.useState<RadioStation[]>([]);
   const [stationsLoading, setStationsLoading] = React.useState(true);
   const [stationsError, setStationsError] = React.useState('');
@@ -195,7 +200,7 @@ export default function RadioPage() {
           </section>
         )}
 
-        <section className="mb-5 border-b border-border/50 pb-5">
+        <section className="radio-directory-header mb-5">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex min-w-0 items-center gap-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/5 text-primary">
@@ -267,15 +272,15 @@ export default function RadioPage() {
           </div>
         ) : (
           <div className="overflow-hidden">
-            <ul className="divide-y divide-border/50">
+            <ul className="radio-station-list">
               {pageStations.map((station) => {
                 const active = selectedStation?.id === station.id;
                 const playing = active && isPlaying;
                 return (
                   <li
                     key={station.id}
-                    className={`flex min-h-[68px] items-center gap-3 px-3 py-2.5 transition-colors sm:px-4 ${
-                      active ? 'bg-primary/5' : 'hover:bg-accent/5'
+                    className={`radio-station flex min-h-[68px] items-center gap-3 px-3 py-2.5 transition-colors sm:px-4 ${
+                      active ? 'is-active' : ''
                     }`}
                   >
                     <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${

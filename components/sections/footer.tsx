@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 
 const footerLinks = {
   'القرآن والحديث': [
@@ -22,7 +22,7 @@ export function Footer() {
       <div className="w-full px-4 py-10 lg:px-8">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-1">
-            <Link href="/" className="logo" aria-label="الصفحة الرئيسية">
+            <Link to="/" className="logo" aria-label="الصفحة الرئيسية">
               <span className="font-kufi text-2xl font-black text-gold-gradient">نور</span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-7 text-muted-foreground">
@@ -36,12 +36,21 @@ export function Footer() {
               <ul className="space-y-2.5">
                 {links.map((link) => (
                   <li key={`${title}-${link.label}`}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-muted-foreground transition-colors hover:text-gold"
-                    >
-                      {link.label}
-                    </Link>
+                    {link.href.startsWith('/') ? (
+                      <Link
+                        to={link.href}
+                        className="text-sm text-muted-foreground transition-colors hover:text-gold"
+                      >
+                        {link.label}
+                      </Link>
+                    ) : (
+                      <a
+                        href={link.href}
+                        className="text-sm text-muted-foreground transition-colors hover:text-gold"
+                      >
+                        {link.label}
+                      </a>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -52,8 +61,8 @@ export function Footer() {
         <div className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-border pt-5 text-sm text-muted-foreground md:flex-row">
           <p>© 2025 نور — جميع الحقوق محفوظة</p>
           <div className="flex items-center gap-4">
-            <Link href="/privacy" className="hover:text-gold">سياسة الخصوصية</Link>
-            <Link href="/terms" className="hover:text-gold">الشروط</Link>
+            <Link to="/privacy" className="hover:text-gold">سياسة الخصوصية</Link>
+            <Link to="/terms" className="hover:text-gold">الشروط</Link>
           </div>
         </div>
       </div>

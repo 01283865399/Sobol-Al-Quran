@@ -10,7 +10,7 @@ export default function PrivacyPage() {
         icon={<Shield className="w-8 h-8 text-accent" />}
       />
       <div className="w-full px-4 py-12 lg:px-8 lg:py-16">
-        <div className="prose prose-sm dark:prose-invert w-full space-y-8 font-cairo leading-relaxed text-muted-foreground">
+        <div className="prose prose-sm w-full space-y-8 font-cairo leading-relaxed text-muted-foreground">
             <section>
               <h2 className="font-kufi text-xl font-bold text-primary mb-3">جمع البيانات</h2>
               <p>يجمع موقع سُبُل البيانات اللازمة فقط لتقديم خدماته، مثل الموقع الجغرافي لحساب مواقيت الصلاة واتجاه القبلة. لا نبيع بياناتك لأي طرف ثالث.</p>

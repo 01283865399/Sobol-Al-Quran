@@ -1,12 +1,15 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { ArrowRight, BookOpen, Headphones, Loader2, Play, RotateCcw } from 'lucide-react';
 import { PageLayout } from '@/components/page-layout';
 import { QuranListeningPlayer } from '@/components/quran-listening-player';
 import { Button } from '@/components/ui/button';
-import { useAudioPlayback } from '@/components/audio-playback-provider';
+import {
+  useAudioNavigation,
+  useQuranPlayback,
+} from '@/components/audio-playback-provider';
 import {
   fetchSurahList,
   type QuranReciter,
@@ -14,12 +17,12 @@ import {
 } from '@/lib/quran-api';
 
 export function QuranReciterListenPage({ reciter }: { reciter: QuranReciter }) {
+  const { quran: player } = useQuranPlayback();
   const {
-    quran: player,
     mainPlayerOpen,
     setMainPlayerOpen,
     setPlayerRoute,
-  } = useAudioPlayback();
+  } = useAudioNavigation();
   const changeReciter = player.changeReciter;
   const playFullSurah = player.playFullSurah;
   const [surahs, setSurahs] = React.useState<SurahMeta[]>([]);
@@ -107,7 +110,7 @@ export function QuranReciterListenPage({ reciter }: { reciter: QuranReciter }) {
               />
             )}
             <div className="quran-reciter-hero__content">
-              <Link href="/quran" className="quran-reciter-hero__back">
+              <Link to="/quran" className="quran-reciter-hero__back">
                 <ArrowRight aria-hidden="true" />
                 قائمة القراء
               </Link>
@@ -206,7 +209,7 @@ export function QuranReciterListenPage({ reciter }: { reciter: QuranReciter }) {
                 لا توجد سور متاحة حاليًا لهذا القارئ.
               </p>
             )}
-            <Link href="/quran/read" className="quran-reading-link">
+            <Link to="/quran/read" className="quran-reading-link">
               <BookOpen aria-hidden="true" />
               الانتقال إلى المصحف للقراءة
             </Link>

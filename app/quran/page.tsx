@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Headphones, UserRound } from 'lucide-react';
 import { PageHeader, PageLayout } from '@/components/page-layout';
 import { QURAN_RECITERS } from '@/lib/quran-api';
@@ -7,7 +7,7 @@ function ReciterCard({ reciter }: { reciter: (typeof QURAN_RECITERS)[number] }) 
   return (
     <article className="quran-reciter-card">
       <Link
-        href={`/quran/reciters/${reciter.id}`}
+        to={`/quran/reciters/${reciter.id}`}
         className="quran-reciter-card__main group"
         aria-label={`استمع إلى تلاوات ${reciter.name}`}
       >
@@ -72,7 +72,7 @@ export default function QuranListeningHomePage() {
   );
 
   return (
-    <PageLayout>
+    <PageLayout showHomeLink={false}>
       <PageHeader
         title="استمع"
         subtitle="اختر قارئك، ثم اختر السورة لتبدأ التلاوة كاملة."
@@ -85,7 +85,7 @@ export default function QuranListeningHomePage() {
             جميع القراء ({QURAN_RECITERS.length})
           </h2>
           <Link
-            href="/quran/read"
+            to="/quran/read"
             className="inline-flex min-h-10 items-center gap-2 rounded-full border border-border/70 px-4 text-sm text-muted-foreground transition-colors hover:border-accent/50 hover:text-primary"
           >
             <BookOpen className="h-4 w-4" aria-hidden="true" />

@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 
 const getMediaUrl = (asset: string, path: string) =>
-  process.env.NODE_ENV === 'production'
+  import.meta.env.PROD
     ? `/api/media/${asset}`
     : path;
 

@@ -5,7 +5,6 @@ import { PageLayout, PageHeader } from '@/components/page-layout';
 import { CircleDot, RotateCcw, Vibrate } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { cn } from '@/lib/utils';
 
 const presetAdhkar = [
   { id: 'subhanallah', text: 'سُبْحَانَ اللَّهِ', target: 33 },
@@ -16,11 +15,80 @@ const presetAdhkar = [
   { id: 'salawat', text: 'اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ', target: 100 },
 ];
 
+const TASBIH_STORAGE_KEY = 'subul-tasbih-state';
+
+function getLocalDateKey() {
+  const date = new Date();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${date.getFullYear()}-${month}-${day}`;
+}
+
 export default function TasbihPage() {
   const [count, setCount] = React.useState(0);
   const [total, setTotal] = React.useState(0);
   const [selectedDhikr, setSelectedDhikr] = React.useState(presetAdhkar[0].id);
   const [vibrate, setVibrate] = React.useState(true);
+  const [storageReady, setStorageReady] = React.useState(false);
+  const [storageCanWrite, setStorageCanWrite] = React.useState(true);
+  const [storageError, setStorageError] = React.useState('');
+
+  React.useEffect(() => {
+    try {
+      const savedState = window.localStorage.getItem(TASBIH_STORAGE_KEY);
+      if (savedState) {
+        const parsed: unknown = JSON.parse(savedState);
+        if (!parsed || typeof parsed !== 'object') {
+          throw new Error('Saved tasbih state has an invalid format');
+        }
+        const saved = parsed as Record<string, unknown>;
+        if (
+          typeof saved.count === 'number' &&
+          Number.isSafeInteger(saved.count) &&
+          typeof saved.total === 'number' &&
+          Number.isSafeInteger(saved.total) &&
+          typeof saved.date === 'string'
+        ) {
+          const savedDhikr = presetAdhkar.find((dhikr) => dhikr.id === saved.selectedDhikr);
+          if (savedDhikr) setSelectedDhikr(savedDhikr.id);
+          if (typeof saved.vibrate === 'boolean') setVibrate(saved.vibrate);
+          if (saved.date === getLocalDateKey()) {
+            setCount(saved.count);
+            setTotal(saved.total);
+          }
+        } else {
+          throw new Error('Saved tasbih state has an invalid format');
+        }
+      }
+    } catch (error) {
+      console.error('Unable to load saved tasbih state', error);
+      setStorageError('تعذر استعادة العداد المحفوظ من هذا المتصفح.');
+      setStorageCanWrite(false);
+    } finally {
+      setStorageReady(true);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (!storageReady || !storageCanWrite) return;
+    try {
+      window.localStorage.setItem(
+        TASBIH_STORAGE_KEY,
+        JSON.stringify({
+          date: getLocalDateKey(),
+          count,
+          total,
+          selectedDhikr,
+          vibrate,
+        })
+      );
+      setStorageError('');
+    } catch (error) {
+      console.error('Unable to save tasbih state', error);
+      setStorageError('تعذر حفظ العداد؛ سيبقى متاحًا حتى إغلاق الصفحة.');
+      setStorageCanWrite(false);
+    }
+  }, [count, total, selectedDhikr, vibrate, storageReady, storageCanWrite]);
 
   const currentDhikr = presetAdhkar.find((d) => d.id === selectedDhikr)!;
   const target = currentDhikr.target;
@@ -52,7 +120,13 @@ export default function TasbihPage() {
         <div className="w-full">
           {/* Dhikr selector */}
           <div className="flex flex-col sm:flex-row gap-4 mb-8 items-center justify-center">
-            <Select value={selectedDhikr} onValueChange={setSelectedDhikr}>
+            <Select
+              value={selectedDhikr}
+              onValueChange={(value) => {
+                setSelectedDhikr(value);
+                setCount(0);
+              }}
+            >
               <SelectTrigger className="w-full sm:w-64 font-cairo">
                 <SelectValue placeholder="اختر الذكر" />
               </SelectTrigger>
@@ -98,8 +172,11 @@ export default function TasbihPage() {
               </svg>
               {/* Tap button */}
               <button
+                type="button"
                 onClick={handleTap}
-                className="absolute inset-8 lg:inset-10 rounded-full bg-gradient-to-br from-primary to-primary/80 flex flex-col items-center justify-center shadow-deep hover:shadow-teal transition-all duration-300 active:scale-95"
+                disabled={!storageReady}
+                aria-label={`تسبيح ${currentDhikr.text}، العدد ${count % target} من ${target}`}
+                className="absolute inset-8 lg:inset-10 rounded-full bg-gradient-to-br from-primary to-primary/80 flex flex-col items-center justify-center shadow-deep hover:shadow-teal transition-all duration-300 active:scale-95 disabled:cursor-wait disabled:opacity-70"
               >
                 <p className="font-amiri text-2xl lg:text-3xl text-accent mb-2">
                   {currentDhikr.text}
@@ -137,6 +214,23 @@ export default function TasbihPage() {
               إعادة التعداد
             </Button>
           </div>
+          {storageError && (
+            <div className="mt-4 text-center text-sm text-muted-foreground" role="status">
+              <p>{storageError}</p>
+              {!storageCanWrite && (
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setStorageError('');
+                    setStorageCanWrite(true);
+                  }}
+                  className="mt-3 font-cairo"
+                >
+                  إعادة محاولة الحفظ
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </PageLayout>

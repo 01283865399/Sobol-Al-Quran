@@ -1,11 +1,9 @@
-import { NextResponse } from 'next/server';
 import {
   radioProviderResponseSchema,
   type RadioStation,
 } from '@/lib/radio-types';
 
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
+export const config = { path: '/api/radio' };
 
 const RADIO_API_URL = 'https://mp3quran.net/api/v3/radios?language=ar';
 const ALLOWED_STREAM_HOSTS = new Set([
@@ -21,18 +19,21 @@ const EGYPT_QURAN_STATION: RadioStation = {
 };
 
 function unavailable() {
-  return NextResponse.json(
+  return Response.json(
     { error: { code: 'radio_source_unavailable' } },
     { status: 502 }
   );
 }
 
-export async function GET() {
+export default async function handler(request: Request): Promise<Response> {
+  if (request.method !== 'GET') {
+    return new Response(null, { status: 405, headers: { Allow: 'GET' } });
+  }
+
   let response: Response;
 
   try {
     response = await fetch(RADIO_API_URL, {
-      next: { revalidate: 3600 },
       signal: AbortSignal.timeout(10_000),
     });
   } catch (error) {
@@ -82,7 +83,7 @@ export async function GET() {
     });
   }
 
-  return NextResponse.json(
+  return Response.json(
     { stations: [...stations, EGYPT_QURAN_STATION] },
     { headers: { 'Cache-Control': 'public, max-age=300, stale-while-revalidate=3600' } }
   );

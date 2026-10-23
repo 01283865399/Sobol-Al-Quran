@@ -32,7 +32,10 @@ import {
   type SurahMeta,
 } from '@/lib/quran-api';
 import { QuranListeningPlayer } from '@/components/quran-listening-player';
-import { useAudioPlayback } from '@/components/audio-playback-provider';
+import {
+  useAudioNavigation,
+  useQuranPlayback,
+} from '@/components/audio-playback-provider';
 
 const SEARCH_PAGE_SIZE = 50;
 
@@ -59,12 +62,12 @@ export default function QuranPage() {
   const [fontSize, setFontSize] = React.useState(2);
   const [copyError, setCopyError] = React.useState('');
 
+  const { quran: player } = useQuranPlayback();
   const {
-    quran: player,
     mainPlayerOpen,
     setMainPlayerOpen,
     setPlayerRoute,
-  } = useAudioPlayback();
+  } = useAudioNavigation();
   const reciter = QURAN_RECITERS.find((item) => item.id === player.selectedReciter) ?? QURAN_RECITERS[5];
   const [searchQuery, setSearchQuery] = React.useState('');
   const [searchResults, setSearchResults] = React.useState<QuranSearchMatch[]>([]);

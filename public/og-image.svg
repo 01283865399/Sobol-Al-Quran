@@ -1,58 +1,59 @@
-<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630">
-      <stop offset="0%" stop-color="#0F5132"/>
-      <stop offset="50%" stop-color="#0A3D28"/>
-      <stop offset="100%" stop-color="#0F5132"/>
+    <linearGradient id="backdrop" x1="70" y1="25" x2="1130" y2="605" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#e9f4ef"/>
+      <stop offset=".52" stop-color="#f7f8f2"/>
+      <stop offset="1" stop-color="#e2eee8"/>
     </linearGradient>
-    <linearGradient id="teal" x1="0" y1="0" x2="0" y2="630">
-      <stop offset="0%" stop-color="#7FD9CE"/>
-      <stop offset="50%" stop-color="#2A9D8F"/>
-      <stop offset="100%" stop-color="#1A6B62"/>
+    <linearGradient id="panel" x1="270" y1="86" x2="1090" y2="548" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff" stop-opacity=".94"/>
+      <stop offset="1" stop-color="#fff" stop-opacity=".64"/>
     </linearGradient>
-    <pattern id="arabesque" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
-      <g fill="none" stroke="#2A9D8F" stroke-opacity="0.05" stroke-width="0.8">
-        <path d="M30 5C40 15 50 20 55 30C50 40 40 45 30 55C20 45 10 40 5 30C10 20 20 15 30 5Z"/>
-        <path d="M30 15C35 22 42 26 45 30C42 34 35 38 30 45C25 38 18 34 15 30C18 26 25 22 30 15Z"/>
-      </g>
+    <linearGradient id="teal" x1="110" y1="100" x2="440" y2="490" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#168879"/>
+      <stop offset="1" stop-color="#0c5d53"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="230" y1="190" x2="355" y2="367" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f3d991"/>
+      <stop offset="1" stop-color="#bd8a35"/>
+    </linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M24 4 44 24 24 44 4 24 24 4Z" stroke="#168879" stroke-opacity=".055"/>
+      <circle cx="24" cy="24" r="2" fill="#bd8a35" fill-opacity=".14"/>
     </pattern>
-    <pattern id="stars" x="0" y="0" width="120" height="120" patternUnits="userSpaceOnUse">
-      <g fill="none" stroke="#2A9D8F" stroke-opacity="0.04" stroke-width="1">
-        <path d="M60 0L72 48L120 60L72 72L60 120L48 72L0 60L48 48Z"/>
-        <circle cx="60" cy="60" r="30"/>
-        <circle cx="60" cy="60" r="15"/>
-      </g>
-    </pattern>
+    <filter id="shadow" x="20" y="15" width="1160" height="600" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feFlood flood-opacity="0" result="background"/>
+      <feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="alpha"/>
+      <feOffset dy="16"/>
+      <feGaussianBlur stdDeviation="18"/>
+      <feComposite in2="alpha" operator="out"/>
+      <feColorMatrix values="0 0 0 0 .07 0 0 0 0 .2 0 0 0 0 .16 0 0 0 .14 0"/>
+      <feBlend in2="background" result="shadow"/>
+      <feBlend in="SourceGraphic" in2="shadow" result="shape"/>
+    </filter>
   </defs>
-  <rect width="1200" height="630" fill="url(#bg)"/>
-  <rect width="1200" height="630" fill="url(#stars)"/>
-  <rect width="1200" height="630" fill="url(#arabesque)"/>
-
-  <circle cx="100" cy="100" r="200" fill="none" stroke="#2A9D8F" stroke-opacity="0.06" stroke-width="1.5"/>
-  <circle cx="1100" cy="530" r="160" fill="none" stroke="#2A9D8F" stroke-opacity="0.06" stroke-width="1.5"/>
-
-  <!-- Dome icon -->
-  <g transform="translate(600,130) scale(0.7)">
-    <path d="M0 -60 C-56 -60 -91 -10 -91 45 L-91 110 L91 110 L91 45 C91 -10 56 -60 0 -60Z" fill="url(#teal)" opacity="0.95"/>
-    <path d="M0 -50 C-36 -50 -61 -10 -66 30 C-66 30 -36 10 0 10 C36 10 66 30 66 30 C61 -10 36 -50 0 -50Z" fill="#A0EDE2" opacity="0.25"/>
-    <path d="M0 -90 C-8 -90 -14 -84 -14 -76 C-14 -68 -8 -62 0 -62 C-4 -64 -6 -68 -6 -76 C-6 -84 -4 -88 0 -90Z" fill="url(#teal)"/>
-    <rect x="-81" y="110" width="162" height="120" rx="8" fill="url(#teal)" opacity="0.85"/>
-    <path d="M-36 230 L-36 150 C-36 130 -21 115 0 115 C21 115 36 130 36 150 L36 230 Z" fill="#0A3D28"/>
-    <path d="M0 0 L0 -40 M-12 -28 L0 -40 L12 -28" stroke="#FAF6EE" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
-    <rect x="-101" y="230" width="202" height="6" rx="3" fill="url(#teal)"/>
+  <rect width="1200" height="630" fill="url(#backdrop)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <circle cx="98" cy="86" r="180" fill="#168879" fill-opacity=".07"/>
+  <circle cx="1110" cy="560" r="200" fill="#bd8a35" fill-opacity=".08"/>
+  <g filter="url(#shadow)">
+    <rect x="54" y="50" width="1092" height="530" rx="42" fill="url(#panel)" stroke="#fff" stroke-opacity=".94" stroke-width="2"/>
+    <rect x="78" y="74" width="1044" height="482" rx="30" stroke="#168879" stroke-opacity=".1" stroke-width="2"/>
   </g>
-
-  <text x="600" y="360" text-anchor="middle" font-family="Georgia,serif" font-size="80" font-weight="bold" fill="url(#teal)">سُبُل</text>
-
-  <g transform="translate(600,395)">
-    <line x1="-100" y1="0" x2="-20" y2="0" stroke="#2A9D8F" stroke-opacity="0.4" stroke-width="1.5"/>
-    <path d="M-12 -8 L0 0 L-12 8 L-20 0 Z" fill="#2A9D8F" opacity="0.5"/>
-    <circle cx="0" cy="0" r="3" fill="#2A9D8F" opacity="0.6"/>
-    <path d="M12 -8 L0 0 L12 8 L20 0 Z" fill="#2A9D8F" opacity="0.5"/>
-    <line x1="20" y1="0" x2="100" y2="0" stroke="#2A9D8F" stroke-opacity="0.4" stroke-width="1.5"/>
+  <g transform="translate(165 171)">
+    <rect width="300" height="300" rx="84" fill="#fff" fill-opacity=".76" stroke="#fff" stroke-width="3"/>
+    <path d="M150 35 265 150 150 265 35 150 150 35Z" fill="url(#teal)"/>
+    <path d="M150 48 252 150 150 252 48 150 150 48Z" stroke="#fff" stroke-opacity=".3" stroke-width="2"/>
+    <path d="M93 124c20-7 39-5 57 8 18-13 37-15 57-8v69c-20-7-39-5-57 8-18-13-37-15-57-8v-69Z" fill="#f6faf7" stroke="#fff" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M150 132v61" stroke="url(#gold)" stroke-linecap="round" stroke-width="5"/>
+    <path d="m150 79 6 18 18 6-18 6-6 18-6-18-18-6 18-6 6-18Z" fill="url(#gold)"/>
   </g>
-
-  <text x="600" y="430" text-anchor="middle" font-family="Georgia,serif" font-size="26" fill="#2A9D8F" opacity="0.85">طرق المؤدية إلى الله</text>
-  <text x="600" y="490" text-anchor="middle" font-family="Arial,sans-serif" font-size="20" fill="#FAF6EE" opacity="0.65">موقع إسلامي شامل — القرآن الكريم · الحديث الشريف · الأذكار · مواقيت الصلاة</text>
-  <text x="600" y="530" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" fill="#2A9D8F" opacity="0.5">السبحة الإلكترونية · الصدقة الجارية · أسماء الله الحسنى · السيرة النبوية</text>
+  <g direction="rtl" text-anchor="end">
+    <text x="1040" y="233" fill="#168879" font-family="Tahoma, Arial, sans-serif" font-size="24" font-weight="700">منصة سُبُل الإسلامية</text>
+    <text x="1040" y="322" fill="#102c27" font-family="Tahoma, Arial, sans-serif" font-size="68" font-weight="700">القرآن أقرب</text>
+    <text x="1040" y="407" fill="#168879" font-family="Tahoma, Arial, sans-serif" font-size="68" font-weight="700">والقلب أطمأن</text>
+    <text x="1040" y="470" fill="#526962" font-family="Tahoma, Arial, sans-serif" font-size="25">تلاوات · إذاعة · حديث · معرفة</text>
+  </g>
+  <path d="M745 505h295" stroke="#bd8a35" stroke-opacity=".35" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="1040" cy="505" r="5" fill="#bd8a35"/>
 </svg>

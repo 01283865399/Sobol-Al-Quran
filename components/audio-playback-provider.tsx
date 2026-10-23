@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Maximize2,
   Pause,
@@ -16,29 +16,38 @@ import type { RadioStation } from '@/lib/radio-types';
 
 type QuranAudioPlayer = ReturnType<typeof useQuranAudio>;
 
-interface AudioPlaybackContextValue {
+interface AudioNavigationContextValue {
+  playerRoute: string;
+  mainPlayerOpen: boolean;
+  setMainPlayerOpen: (open: boolean) => void;
+  setPlayerRoute: (route: string) => void;
+  openMainPlayer: () => void;
+}
+
+interface QuranPlaybackContextValue {
   quran: QuranAudioPlayer;
+}
+
+interface RadioPlaybackContextValue {
   radioAudioRef: React.RefObject<HTMLAudioElement>;
   selectedStation: RadioStation | null;
   isRadioLoading: boolean;
   isRadioPlaying: boolean;
   radioError: string;
   radioVolume: number;
-  mainPlayerOpen: boolean;
-  setMainPlayerOpen: (open: boolean) => void;
-  setPlayerRoute: (route: string) => void;
-  openMainPlayer: () => void;
   playRadioStation: (station: RadioStation) => void;
   toggleRadioPlayback: () => void;
   stopRadioPlayback: () => void;
   setRadioVolume: (volume: number) => void;
 }
 
-const AudioPlaybackContext = React.createContext<AudioPlaybackContextValue | null>(null);
+const AudioNavigationContext = React.createContext<AudioNavigationContextValue | null>(null);
+const QuranPlaybackContext = React.createContext<QuranPlaybackContextValue | null>(null);
+const RadioPlaybackContext = React.createContext<RadioPlaybackContextValue | null>(null);
 
 export function AudioPlaybackProvider({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const router = useRouter();
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
   const quranPlayer = useQuranAudio();
   const radioAudioRef = React.useRef<HTMLAudioElement>(null);
   const radioAttemptRef = React.useRef(0);
@@ -120,8 +129,8 @@ export function AudioPlaybackProvider({ children }: { children: React.ReactNode 
       return;
     }
     pendingOpenRouteRef.current = playerRoute;
-    router.push(playerRoute);
-  }, [pathname, playerRoute, router]);
+    navigate(playerRoute);
+  }, [navigate, pathname, playerRoute]);
 
   React.useEffect(() => {
     if (previousPathRef.current === pathname) return;
@@ -193,14 +202,16 @@ export function AudioPlaybackProvider({ children }: { children: React.ReactNode 
     radioAudioRef.current?.pause();
   }, []);
 
-  const value = React.useMemo(() => ({
-    quran,
-    radioAudioRef,
+  const navigationValue = React.useMemo(() => ({
     playerRoute,
     mainPlayerOpen,
     setMainPlayerOpen,
     setPlayerRoute,
     openMainPlayer,
+  }), [playerRoute, mainPlayerOpen, openMainPlayer]);
+  const quranValue = React.useMemo(() => ({ quran }), [quran]);
+  const radioValue = React.useMemo(() => ({
+    radioAudioRef,
     selectedStation,
     isRadioLoading,
     isRadioPlaying,
@@ -211,10 +222,6 @@ export function AudioPlaybackProvider({ children }: { children: React.ReactNode 
     stopRadioPlayback,
     setRadioVolume,
   }), [
-    quran,
-    playerRoute,
-    mainPlayerOpen,
-    openMainPlayer,
     selectedStation,
     isRadioLoading,
     isRadioPlaying,
@@ -237,15 +244,17 @@ export function AudioPlaybackProvider({ children }: { children: React.ReactNode 
     : 0;
 
   return (
-    <AudioPlaybackContext.Provider value={value}>
-      <audio ref={quranPlayer.audioRef} preload="none" aria-hidden="true" />
-      <audio ref={radioAudioRef} preload="none" aria-label="مشغل البث الإذاعي" />
-      {children}
-      {hasActivePlayback && !mainPlayerOpen && (
-        <aside
-          className="global-audio-player"
-          aria-label="مشغل صوت مستمر"
-        >
+    <AudioNavigationContext.Provider value={navigationValue}>
+      <QuranPlaybackContext.Provider value={quranValue}>
+        <RadioPlaybackContext.Provider value={radioValue}>
+          <audio ref={quranPlayer.audioRef} preload="none" aria-hidden="true" />
+          <audio ref={radioAudioRef} preload="none" aria-label="مشغل البث الإذاعي" />
+          {children}
+          {hasActivePlayback && !mainPlayerOpen && (
+            <aside
+              className="global-audio-player"
+              aria-label="مشغل صوت مستمر"
+            >
           {!isRadioSelected && (
             <div
               className="global-audio-player__progress"
@@ -327,9 +336,11 @@ export function AudioPlaybackProvider({ children }: { children: React.ReactNode 
               <Square className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
-        </aside>
-      )}
-    </AudioPlaybackContext.Provider>
+            </aside>
+          )}
+        </RadioPlaybackContext.Provider>
+      </QuranPlaybackContext.Provider>
+    </AudioNavigationContext.Provider>
   );
 }
 
@@ -339,10 +350,26 @@ function formatAudioTime(seconds: number) {
   return `${minutes}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
 }
 
-export function useAudioPlayback() {
-  const context = React.useContext(AudioPlaybackContext);
+export function useAudioNavigation() {
+  const context = React.useContext(AudioNavigationContext);
   if (!context) {
-    throw new Error('useAudioPlayback must be used within AudioPlaybackProvider');
+    throw new Error('useAudioNavigation must be used within AudioPlaybackProvider');
+  }
+  return context;
+}
+
+export function useQuranPlayback() {
+  const context = React.useContext(QuranPlaybackContext);
+  if (!context) {
+    throw new Error('useQuranPlayback must be used within AudioPlaybackProvider');
+  }
+  return context;
+}
+
+export function useRadioPlayback() {
+  const context = React.useContext(RadioPlaybackContext);
+  if (!context) {
+    throw new Error('useRadioPlayback must be used within AudioPlaybackProvider');
   }
   return context;
 }

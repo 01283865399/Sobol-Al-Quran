@@ -16,8 +16,7 @@ const MEDIA_ASSETS: Record<string, MediaAsset> = {
 const MEDIA_BASE_URL =
   'https://media.githubusercontent.com/media/01283865399/Sobol-Al-Quran/main/public/assets/';
 
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
+export const config = { path: '/api/media/*' };
 
 async function handleMediaRequest(request: Request, assetId: string) {
   const asset = MEDIA_ASSETS[assetId];
@@ -68,16 +67,11 @@ async function handleMediaRequest(request: Request, assetId: string) {
   );
 }
 
-export async function GET(
-  request: Request,
-  { params }: { params: { asset: string } }
-) {
-  return handleMediaRequest(request, params.asset);
-}
-
-export async function HEAD(
-  request: Request,
-  { params }: { params: { asset: string } }
-) {
-  return handleMediaRequest(request, params.asset);
+export default async function handler(request: Request): Promise<Response> {
+  if (request.method !== 'GET' && request.method !== 'HEAD') {
+    return new Response(null, { status: 405, headers: { Allow: 'GET, HEAD' } });
+  }
+  const assetId = new URL(request.url).pathname.split('/').at(-1);
+  if (!assetId) return new Response('Media not found', { status: 404 });
+  return handleMediaRequest(request, decodeURIComponent(assetId));
 }

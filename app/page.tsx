@@ -1,137 +1,162 @@
-'use client';
-
-import Link from 'next/link';
-import * as React from 'react';
-import { ArrowLeft, BookOpen, Headphones, MessageSquareText, Star, Sparkles } from 'lucide-react';
-import { Navbar } from '@/components/navbar';
+import {
+  ArrowLeft,
+  BookOpen,
+  Headphones,
+  MessageCircle,
+  Radio,
+  ScrollText,
+  Sparkles,
+  CircleDot,
+} from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Footer } from '@/components/sections/footer';
+import { Navbar } from '@/components/navbar';
 
-const highlightTiles = [
-  { title: 'القرآن الكريم', description: 'تصفح المصحف، البحث، ومقاطع التلاوة', href: '/quran', icon: BookOpen },
-  { title: 'المساعد الإسلامي', description: 'أسئلة موثقة ومشاركات من مصادر معتمدة', href: '/chat', icon: MessageSquareText },
-  { title: 'إذاعة القرآن', description: 'تلاوات مباشرة من محطات موثوقة', href: '/radio', icon: Headphones },
+const sitePaths = [
+  {
+    title: 'القرآن الكريم',
+    description: 'استمع إلى تلاوات نخبة من القراء واختر السورة التي تحب.',
+    href: '/quran',
+    icon: Headphones,
+    label: 'استمع للتلاوات',
+    number: '١',
+  },
+  {
+    title: 'المصحف للقراءة',
+    description: 'تصفّح سور القرآن واقرأ الآيات في مساحة هادئة وواضحة.',
+    href: '/quran/read',
+    icon: BookOpen,
+    label: 'افتح المصحف',
+    number: '٢',
+  },
+  {
+    title: 'إذاعة القرآن',
+    description: 'استمع إلى محطات قرآنية مباشرة وتلاوات متواصلة.',
+    href: '/radio',
+    icon: Radio,
+    label: 'تصفّح الإذاعات',
+    number: '٣',
+  },
+  {
+    title: 'الحديث الشريف',
+    description: 'ابحث في الأحاديث المتاحة حسب الكتاب أو الكلمات.',
+    href: '/hadith',
+    icon: ScrollText,
+    label: 'اقرأ الأحاديث',
+    number: '٤',
+  },
+  {
+    title: 'المساعد الإسلامي',
+    description: 'اطرح سؤالك واستكشف إجابات تعليمية مع مصادرها.',
+    href: '/chat',
+    icon: MessageCircle,
+    label: 'اسأل المساعد',
+    number: '٥',
+  },
+  {
+    title: 'السبحة الإلكترونية',
+    description: 'تابع أذكارك وعدّادك اليومي ببساطة.',
+    href: '/tasbih',
+    icon: CircleDot,
+    label: 'ابدأ التسبيح',
+    number: '٦',
+  },
 ];
 
 export default function Home() {
-  const [heroTilt, setHeroTilt] = React.useState({ x: 0, y: 0 });
-  const [tiles, setTiles] = React.useState<Record<string, { x: number; y: number }>>({});
-
-  const handleHeroMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / rect.width - 0.5) * 16;
-    const y = ((event.clientY - rect.top) / rect.height - 0.5) * -16;
-    setHeroTilt({ x, y });
-  };
-
-  const handleTileMove = (id: string, event: React.MouseEvent<HTMLAnchorElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / rect.width - 0.5) * 12;
-    const y = ((event.clientY - rect.top) / rect.height - 0.5) * -12;
-    setTiles((prev) => ({ ...prev, [id]: { x, y } }));
-  };
-
-  const resetTile = (id: string) => setTiles((prev) => ({ ...prev, [id]: { x: 0, y: 0 } }));
-
   return (
     <>
       <Navbar />
-      <main className="w-full px-4 pb-20 lg:px-8">
-        <section className="hero home-hero pt-10 lg:pt-16">
-          <div className="home-hero__content">
-            <div className="home-hero__eyebrow">
-              <Sparkles className="h-4 w-4" aria-hidden="true" />
-              <span>رفيقك للقرآن والعلم والطمأنينة</span>
-            </div>
-            <div className="bsm">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
-            <h1 className="font-kufi text-gold-gradient">نور</h1>
-            <p className="home-hero__description mt-4 max-w-xl text-lg leading-8 text-muted-foreground">
-              منصة إسلامية عربية تجمع بين القرآن، الحديث، والمساعد الإسلامي في تجربة هادئة ومريحة.
+      <main className="home-page">
+        <section className="home-hero" aria-labelledby="home-title">
+          <div className="home-hero__copy">
+            <span className="home-hero__eyebrow">
+              <Sparkles aria-hidden="true" />
+              رفيقك للقرآن والعلم والطمأنينة
+            </span>
+            <p className="home-hero__basmala">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</p>
+            <h1 id="home-title">طريقك إلى <span>نور</span></h1>
+            <p className="home-hero__description">
+              مساحة عربية تجمع القرآن الكريم والحديث والإذاعة والمساعد الإسلامي،
+              لتكون قريبة منك أينما كنت.
             </p>
-            <div className="cta">
-              <Link href="/quran" className="btn fill">
-                استكشف المصحف
-                <ArrowLeft className="h-4 w-4" />
+            <div className="home-hero__actions">
+              <Link to="/quran" className="home-action home-action--primary">
+                ابدأ الاستماع
+                <ArrowLeft aria-hidden="true" />
               </Link>
-              <Link href="/chat" className="btn">
-                اسأل المساعد
+              <Link to="/quran/read" className="home-action home-action--secondary">
+                <BookOpen aria-hidden="true" />
+                اقرأ القرآن
               </Link>
             </div>
-            <div className="home-hero__highlights" aria-label="مميزات المنصة">
-              <span><BookOpen aria-hidden="true" /> 114 سورة</span>
-              <span><Headphones aria-hidden="true" /> تلاوات وإذاعة</span>
-              <span><MessageSquareText aria-hidden="true" /> مساعد إسلامي</span>
+            <div className="home-hero__facts" aria-label="معلومات عن الموقع">
+              <span><strong>١١٤</strong> سورة</span>
+              <i aria-hidden="true" />
+              <span>تلاوات وإذاعات مباشرة</span>
+              <i aria-hidden="true" />
+              <span>تجربة عربية متكاملة</span>
             </div>
           </div>
 
-          <div
-            aria-label="لوحة تجسيد تصميم نور"
-            className="arch"
-            onMouseMove={handleHeroMove}
-            onMouseLeave={() => setHeroTilt({ x: 0, y: 0 })}
-            style={{
-              transform: `perspective(1200px) rotateX(${heroTilt.y}deg) rotateY(${heroTilt.x}deg) translateY(${Math.abs(heroTilt.y) * 0.25}px)`,
-            }}
-          >
-            <svg className="rosette" viewBox="0 0 200 200" aria-hidden="true">
-              <g transform="translate(100 100)" fill="none" stroke="currentColor" strokeWidth="1.35">
-                <circle className="l1" r="75" />
-                <circle className="l2" r="58" />
-                <circle className="d" r="42" strokeDasharray="7 18" />
-                <circle className="d" r="24" strokeDasharray="5 16" />
-                <g strokeWidth="1.1">
-                  <path d="M0 -82 L0 -62 M0 62 L0 82 M-82 0 L-62 0 M62 0 L82 0 M-58 -58 L-45 -45 M45 -45 L58 -58 M-58 58 L-45 45 M45 45 L58 58" />
-                </g>
-              </g>
-            </svg>
-            <q>وَفِي ذَٰلِكَ لَذِكْرَىٰ لِأُولِي الْأَلْبَابِ</q>
-            <small>رحلة تجمع بين التلاوة والعلم والطمأنينة</small>
+          <aside className="home-hero__art" aria-label="آية قرآنية">
+            <div className="home-hero__ornament" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </div>
+            <div className="home-hero__art-label">
+              <span className="home-hero__art-dot" />
+              آية تضيء يومك
+            </div>
+            <blockquote>
+              <p>وَقُل رَّبِّ زِدْنِي عِلْمًا</p>
+              <cite>سورة طه · ١١٤</cite>
+            </blockquote>
+            <div className="home-hero__art-footer">
+              <span>تلاوة</span>
+              <span>تدبّر</span>
+              <span>طمأنينة</span>
+            </div>
+          </aside>
+          <div className="home-hero__glow" aria-hidden="true" />
+        </section>
+
+        <section className="home-paths" aria-labelledby="home-paths-title">
+          <div className="home-section-heading">
+            <div>
+              <p>اكتشف سُبُل</p>
+              <h2 id="home-paths-title">كل ما تحتاجه في مكان واحد</h2>
+            </div>
+            <span>اختر وجهتك وابدأ</span>
+          </div>
+          <div className="home-path-grid">
+            {sitePaths.map(({ title, description, href, icon: Icon, label, number }) => (
+              <Link className="home-path-card" key={href} to={href}>
+                <span className="home-path-card__number">{number}</span>
+                <span className="home-path-card__icon"><Icon aria-hidden="true" /></span>
+                <span className="home-path-card__title">{title}</span>
+                <span className="home-path-card__description">{description}</span>
+                <span className="home-path-card__link">
+                  {label}
+                  <ArrowLeft aria-hidden="true" />
+                </span>
+              </Link>
+            ))}
           </div>
         </section>
 
-        <section className="pt-10 lg:pt-14">
-          <div className="ph">
-            <h2>مراكز الموقع</h2>
-            <p className="lead">نحو تجربة إسلامية متكاملة، تجمع بين القراءة، الاستماع، والطمأنينة اليومية.</p>
+        <section className="home-verse" aria-label="آية اليوم">
+          <span className="home-verse__icon"><BookOpen aria-hidden="true" /></span>
+          <div>
+            <p className="home-verse__eyebrow">زاد يومك</p>
+            <blockquote>«أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ»</blockquote>
+            <cite>سورة الرعد · ٢٨</cite>
           </div>
-
-          <div className="tiles">
-            {highlightTiles.map(({ title, description, href, icon: Icon }) => {
-              const tilt = tiles[href] ?? { x: 0, y: 0 };
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  className="group tilt-card"
-                  onMouseMove={(event) => handleTileMove(href, event)}
-                  onMouseLeave={() => resetTile(href)}
-                  style={{
-                    transform: `perspective(1000px) rotateX(${tilt.y}deg) rotateY(${tilt.x}deg) translateY(0)`,
-                    boxShadow: `0 ${Math.abs(tilt.y) * 2}px ${Math.abs(tilt.x) * 3 + 18}px rgba(221, 183, 104, 0.12)`,
-                  }}
-                >
-                  <div className="niche"><Icon className="h-5 w-5" /></div>
-                  <h3>{title}</h3>
-                  <p>{description}</p>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-
-        <section className="pt-12 lg:pt-16">
-          <div className="border-y border-gold/25 py-6 lg:py-8">
-            <div className="mb-6 flex items-center justify-between gap-4">
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-gold">Daily light</p>
-                <h3 className="mt-2 text-2xl font-black text-gold-gradient">آية اليوم</h3>
-              </div>
-              <Star className="h-6 w-6 text-gold" />
-            </div>
-            <p className="font-quran text-3xl leading-[2.2] text-foreground lg:text-4xl">
-              وَقُلْ رَبِّ زِدْنِي عِلْمًا
-            </p>
-            <p className="mt-4 text-sm text-muted-foreground">طه — الآية 114</p>
-          </div>
+          <Link to="/quran/read" aria-label="اقرأ القرآن الكريم">
+            اقرأ وتدبّر
+            <ArrowLeft aria-hidden="true" />
+          </Link>
         </section>
       </main>
       <Footer />

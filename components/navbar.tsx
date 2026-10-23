@@ -1,12 +1,16 @@
 ﻿'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useTheme } from 'next-themes';
-import { Moon, Sun, Menu, X, BookOpen, ScrollText, MessageCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, X, BookOpen, ScrollText, MessageCircle } from 'lucide-react';
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetClose,
+  SheetTitle,
+  SheetDescription,
+} from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 
 const navLinks = [
@@ -29,43 +33,33 @@ function Logo() {
 }
 
 export function Navbar() {
-  const { theme, setTheme } = useTheme();
-  const pathname = usePathname();
-  const [mounted, setMounted] = React.useState(false);
+  const { pathname } = useLocation();
   const [scrolled, setScrolled] = React.useState(false);
 
   React.useEffect(() => {
-    setMounted(true);
     const handleScroll = () => setScrolled(window.scrollY > 16);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
 
   return (
     <header className={cn('bar', scrolled ? 'shadow-sacred' : '')}>
       <div className="wrap">
-        <Link href="/" className="logo" aria-label="الصفحة الرئيسية">
+        <Link to="/" className="logo" aria-label="الصفحة الرئيسية">
           <Logo />
         </Link>
 
         <nav aria-label="التنقل الرئيسي">
           {navLinks.map((link) => (
-            <Link key={link.href} href={link.href} aria-current={isActive(link.href) ? 'page' : undefined}>
+            <Link key={link.href} to={link.href} aria-current={isActive(link.href) ? 'page' : undefined}>
               {link.label}
             </Link>
           ))}
         </nav>
 
         <div className="flex items-center gap-2">
-          {mounted && (
-            <button type="button" onClick={toggleTheme} className="ibtn" aria-label="تبديل الوضع">
-              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </button>
-          )}
-
           <Sheet>
             <SheetTrigger asChild>
               <button type="button" className="ibtn lg:hidden" aria-label="فتح القائمة">
@@ -73,6 +67,8 @@ export function Navbar() {
               </button>
             </SheetTrigger>
             <SheetContent side="right" className="w-80 p-0 bg-background border-l border-border">
+              <SheetTitle className="sr-only">قائمة التنقل</SheetTitle>
+              <SheetDescription className="sr-only">روابط أقسام الموقع</SheetDescription>
               <div className="flex flex-col h-full">
                 <div className="flex items-center justify-between p-5 border-b border-border">
                   <Logo />
@@ -86,7 +82,7 @@ export function Navbar() {
                     return (
                       <SheetClose key={link.href} asChild>
                         <Link
-                          href={link.href}
+                          to={link.href}
                           className={cn(
                             'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors',
                             isActive(link.href) ? 'bg-accent/10 text-primary' : 'text-foreground/70 hover:text-primary hover:bg-accent/5'

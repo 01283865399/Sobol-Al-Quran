@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { Bot, Loader2, Plus, Send, ShieldCheck, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -34,7 +34,7 @@ function renderAssistantContent(content: string): React.ReactNode {
     return match ? (
       <Link
         key={index}
-        href={match[2]}
+        to={match[2]}
         className="font-semibold text-accent underline underline-offset-4"
       >
         {match[1]}
@@ -352,7 +352,7 @@ export default function ChatPage() {
                         {message.sources.map((source) => (
                           <Link
                             key={`${source.url}-${source.title}`}
-                            href={source.url}
+                            to={source.url}
                             className="inline-flex min-h-9 items-center rounded-full border border-accent/20 bg-accent/5 px-3 py-1.5 text-sm text-primary transition-colors hover:border-accent/50 hover:bg-accent/10"
                           >
                             {source.title}
