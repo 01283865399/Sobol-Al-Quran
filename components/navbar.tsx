@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, BookOpen, ScrollText, MessageCircle } from 'lucide-react';
+import { Menu, X, BookOpen, ScrollText, MessageCircle, Sparkles } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -19,6 +19,7 @@ const navLinks = [
   { href: '/chat', label: 'المساعد', icon: MessageCircle },
   { href: '/radio', label: 'الإذاعة', icon: ScrollText },
   { href: '/hadith', label: 'الحديث', icon: ScrollText },
+  { href: '/stories', label: 'قصص وعبر', icon: Sparkles },
 ];
 
 function Logo() {
