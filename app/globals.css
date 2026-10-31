@@ -382,6 +382,101 @@
       width: min(100%, 17rem);
     }
   }
+  .developer-projects {
+    margin-top: 4rem;
+  }
+  .developer-section-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .developer-section-heading h2 {
+    margin: .55rem 0 0;
+    color: #314238;
+    font-size: clamp(1.7rem, 4vw, 2.5rem);
+  }
+  .developer-section-heading > span {
+    color: #718070;
+    font-size: .8rem;
+  }
+  .developer-project-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .developer-project {
+    overflow: hidden;
+    border: 1px solid rgba(166, 126, 53, .16);
+    border-radius: 1.3rem;
+    background: #fffdf8;
+    box-shadow: 0 .7rem 2rem rgba(63, 53, 32, .07);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .developer-project:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 1rem 2.5rem rgba(63, 53, 32, .14);
+  }
+  .developer-project__image {
+    display: grid;
+    place-items: center;
+    height: 10rem;
+    overflow: hidden;
+    background: #f0eee7;
+  }
+  .developer-project__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .developer-project--purple .developer-project__image { background: #855ca3; }
+  .developer-project--sand .developer-project__image { background: #faf7f2; }
+  .developer-project--dark .developer-project__image { background: #0d0d0d; }
+  .developer-project__body {
+    padding: 1rem;
+  }
+  .developer-project__body h3 {
+    margin: 0;
+    color: #314238;
+    font-size: 1.05rem;
+  }
+  .developer-project__body p {
+    min-height: 3.2rem;
+    margin: .55rem 0 .9rem;
+    color: #718070;
+    font-size: .78rem;
+    line-height: 1.7;
+  }
+  .developer-project__body span {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    color: #a06a34;
+    font-size: .78rem;
+    font-weight: 700;
+  }
+  .developer-project__body svg {
+    width: .9rem;
+    height: .9rem;
+  }
+  @media (max-width: 900px) {
+    .developer-project-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 560px) {
+    .developer-section-heading {
+      display: block;
+    }
+    .developer-section-heading > span {
+      display: block;
+      margin-top: .5rem;
+    }
+    .developer-project-grid {
+      grid-template-columns: 1fr;
+    }
+  }
   .islamic-videos-message {
     padding: 2rem;
     border: 1px solid #d1fae5;
