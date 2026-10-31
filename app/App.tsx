@@ -4,6 +4,7 @@ import { PageLayout, PageHeader } from '@/components/page-layout';
 import { FileQuestion } from 'lucide-react';
 
 const ChatPage = lazy(() => import('@/app/chat/page'));
+const DeveloperPage = lazy(() => import('@/app/developer/page'));
 const HadithPage = lazy(() => import('@/app/hadith/page'));
 const HomePage = lazy(() => import('@/app/page'));
 const PrivacyPage = lazy(() => import('@/app/privacy/page'));
@@ -48,6 +49,7 @@ export function App() {
         <Route path="/stories" element={<StoriesPage />} />
         <Route path="/hadith" element={<HadithPage />} />
         <Route path="/chat" element={<ChatPage />} />
+        <Route path="/developer" element={<DeveloperPage />} />
         <Route path="/tasbih" element={<TasbihPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/terms" element={<TermsPage />} />

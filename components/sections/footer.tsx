@@ -61,6 +61,9 @@ export function Footer() {
         <div className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-border pt-5 text-sm text-muted-foreground md:flex-row">
           <p>© 2025 نور — جميع الحقوق محفوظة</p>
           <div className="flex items-center gap-4">
+            <Link to="/developer" className="font-medium text-gold-gradient hover:opacity-80">
+              Developed by المهندس أحمد ديب
+            </Link>
             <Link to="/privacy" className="hover:text-gold">سياسة الخصوصية</Link>
             <Link to="/terms" className="hover:text-gold">الشروط</Link>
           </div>

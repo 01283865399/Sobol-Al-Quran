@@ -246,6 +246,142 @@
   .stories-coming-soon p {
     color: #718070;
   }
+  .developer-page {
+    min-height: calc(100vh - 8rem);
+    max-width: 76rem;
+    margin: 0 auto;
+    padding: 2rem 1rem 4rem;
+  }
+  .developer-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    color: #718070;
+    font-size: .9rem;
+    margin-bottom: 1.5rem;
+  }
+  .developer-back-link svg {
+    width: 1rem;
+    height: 1rem;
+  }
+  .developer-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 24rem);
+    gap: 2rem;
+    align-items: center;
+    overflow: hidden;
+    min-height: 34rem;
+    padding: clamp(1.5rem, 4vw, 4rem);
+    border: 1px solid rgba(166, 126, 53, .2);
+    border-radius: 2rem;
+    background:
+      radial-gradient(circle at 85% 15%, rgba(198, 160, 76, .2), transparent 28%),
+      linear-gradient(135deg, #fffdf7, #f3efe3);
+    box-shadow: 0 1.5rem 4rem rgba(63, 53, 32, .1);
+  }
+  .developer-card__content {
+    max-width: 38rem;
+  }
+  .developer-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    color: #a06a34;
+    font-size: .85rem;
+    font-weight: 700;
+  }
+  .developer-kicker svg {
+    width: 1rem;
+    height: 1rem;
+  }
+  .developer-card h1 {
+    margin: 1rem 0 .65rem;
+    color: #314238;
+    font-size: clamp(2.2rem, 6vw, 4.5rem);
+    line-height: 1.1;
+  }
+  .developer-role {
+    margin: 0;
+    color: #a06a34;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+  .developer-bio {
+    max-width: 34rem;
+    margin: 1.5rem 0 0;
+    color: #647064;
+    font-size: 1rem;
+    line-height: 2;
+  }
+  .developer-contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .7rem;
+    margin-top: 2rem;
+  }
+  .developer-contact a {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .75rem 1rem;
+    border: 1px solid rgba(166, 126, 53, .2);
+    border-radius: 999px;
+    color: #314238;
+    background: rgba(255, 255, 255, .7);
+    font-size: .85rem;
+    font-weight: 700;
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .developer-contact a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 .5rem 1rem rgba(63, 53, 32, .1);
+  }
+  .developer-contact svg {
+    width: 1rem;
+    height: 1rem;
+    color: #a06a34;
+  }
+  .developer-card__portrait {
+    position: relative;
+    justify-self: center;
+    width: min(100%, 22rem);
+    padding: .65rem;
+    border-radius: 1.75rem;
+    background: rgba(255, 255, 255, .72);
+    box-shadow: 0 1rem 2.5rem rgba(63, 53, 32, .16);
+    transform: rotate(2deg);
+  }
+  .developer-card__portrait img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1.1;
+    object-fit: cover;
+    border-radius: 1.3rem;
+  }
+  .developer-card__portrait span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+    padding: .7rem .25rem .25rem;
+    color: #718070;
+    font-size: .72rem;
+    font-weight: 700;
+  }
+  .developer-card__portrait span svg {
+    width: .9rem;
+    height: .9rem;
+    color: #a06a34;
+  }
+  @media (max-width: 700px) {
+    .developer-card {
+      grid-template-columns: 1fr;
+    }
+    .developer-card__portrait {
+      grid-row: 1;
+      width: min(100%, 17rem);
+    }
+  }
   .islamic-videos-message {
     padding: 2rem;
     border: 1px solid #d1fae5;
