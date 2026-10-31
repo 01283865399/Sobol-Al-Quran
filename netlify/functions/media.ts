@@ -11,6 +11,9 @@ const MEDIA_ASSETS: Record<string, MediaAsset> = {
   nature: { filename: 'ضباب.mp4', contentType: 'video/mp4' },
   sea: { filename: 'بحر.mp4', contentType: 'video/mp4' },
   sky: { filename: 'سماء.mp4', contentType: 'video/mp4' },
+  'kaaba-tawaf': { filename: 'kaaba-tawaf.mp4', contentType: 'video/mp4' },
+  'nabawi-evening': { filename: 'nabawi-evening.mp4', contentType: 'video/mp4' },
+  'nabawi-courtyard': { filename: 'nabawi-courtyard.mp4', contentType: 'video/mp4' },
 };
 
 const MEDIA_BASE_URL =

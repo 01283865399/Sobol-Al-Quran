@@ -9,6 +9,11 @@ import {
 
 const PLAYBACK_ERROR = 'تعذر تشغيل التلاوة، جرّب المصدر البديل أو أعد المحاولة';
 
+export interface QuranFullSurahQueueItem {
+  surahNumber: number;
+  reciterId: string;
+}
+
 export function useQuranAudio() {
   const audioRef = React.useRef<HTMLAudioElement>(null);
   const tracksRef = React.useRef<QuranAudioTrack[]>([]);
@@ -35,6 +40,9 @@ export function useQuranAudio() {
   const [playbackRate, setPlaybackRate] = React.useState(1);
   const [repeatTrack, setRepeatTrack] = React.useState(false);
   const repeatTrackRef = React.useRef(false);
+  const fullSurahQueueRef = React.useRef<QuranFullSurahQueueItem[]>([]);
+  const fullSurahQueueIndexRef = React.useRef(-1);
+  const [fullSurahQueueIndex, setFullSurahQueueIndex] = React.useState(-1);
 
   React.useEffect(() => {
     if (audioRef.current) audioRef.current.volume = volume;
@@ -90,6 +98,67 @@ export function useQuranAudio() {
     }
   }, []);
 
+  const startFullSurah = React.useCallback((
+    item: QuranFullSurahQueueItem,
+    clearQueue = false
+  ) => {
+    const reciter = QURAN_RECITERS.find((candidate) => candidate.id === item.reciterId);
+    const audioUrl = reciter?.surahAudioUrls?.[item.surahNumber] ??
+      (reciter?.fullSurahAudioBaseUrl
+        ? `${reciter.fullSurahAudioBaseUrl}${String(item.surahNumber).padStart(3, '0')}.mp3`
+        : undefined);
+
+    if (
+      !Number.isInteger(item.surahNumber) ||
+      item.surahNumber < 1 ||
+      item.surahNumber > 114 ||
+      !reciter
+    ) {
+      setAudioError('تعذر تحديد السورة أو القارئ المطلوب');
+      return false;
+    }
+    if (!audioUrl) {
+      setAudioError('لا تتوفر تلاوة لهذه السورة ضمن قائمة التشغيل');
+      return false;
+    }
+
+    let source: URL;
+    try {
+      source = new URL(audioUrl);
+    } catch {
+      setAudioError('رابط التلاوة غير صالح');
+      return false;
+    }
+    if (source.protocol !== 'https:') {
+      setAudioError('مصدر التلاوة غير آمن');
+      return false;
+    }
+
+    if (clearQueue) {
+      fullSurahQueueRef.current = [];
+      fullSurahQueueIndexRef.current = -1;
+      setFullSurahQueueIndex(-1);
+    }
+    playlistRequestRef.current += 1;
+    currentSurahRef.current = item.surahNumber;
+    currentTrackIndexRef.current = 0;
+    selectedReciterRef.current = item.reciterId;
+    playlistKeyRef.current = `full:${item.surahNumber}:${item.reciterId}`;
+    tracksRef.current = [{ numberInSurah: 1, sources: [source.href] }];
+    setCurrentSurahNumber(item.surahNumber);
+    setSelectedReciter(item.reciterId);
+    playTrackAt(0, 0, true);
+    return true;
+  }, [playTrackAt]);
+
+  const playFullSurahQueueItem = React.useCallback((index: number) => {
+    const item = fullSurahQueueRef.current[index];
+    if (!item) return false;
+    fullSurahQueueIndexRef.current = index;
+    setFullSurahQueueIndex(index);
+    return startFullSurah(item);
+  }, [startFullSurah]);
+
   React.useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -98,6 +167,16 @@ export function useQuranAudio() {
       if (repeatTrackRef.current) {
         playTrackAt(currentTrackIndexRef.current);
         return;
+      }
+      if (fullSurahQueueRef.current.length > 0) {
+        const nextQueueIndex = fullSurahQueueIndexRef.current + 1;
+        if (nextQueueIndex < fullSurahQueueRef.current.length) {
+          playFullSurahQueueItem(nextQueueIndex);
+          return;
+        }
+        fullSurahQueueRef.current = [];
+        fullSurahQueueIndexRef.current = -1;
+        setFullSurahQueueIndex(-1);
       }
       const nextTrack = currentTrackIndexRef.current + 1;
       if (nextTrack < tracksRef.current.length) {
@@ -163,7 +242,7 @@ export function useQuranAudio() {
       audio.removeEventListener('playing', onPlaying);
       audio.removeEventListener('pause', onPause);
     };
-  }, [playTrackAt]);
+  }, [playFullSurahQueueItem, playTrackAt]);
 
   React.useEffect(() => () => {
     playlistRequestRef.current += 1;
@@ -183,6 +262,9 @@ export function useQuranAudio() {
     autoplay: boolean,
     seekTo = 0
   ) => {
+    fullSurahQueueRef.current = [];
+    fullSurahQueueIndexRef.current = -1;
+    setFullSurahQueueIndex(-1);
     const key = `${surahNumber}:${reciterId}`;
     const request = ++playlistRequestRef.current;
     currentSurahRef.current = surahNumber;
@@ -227,39 +309,42 @@ export function useQuranAudio() {
   );
 
   const playFullSurah = React.useCallback((surahNumber: number, audioUrl: string, reciterId: string) => {
+    const reciter = QURAN_RECITERS.find((candidate) => candidate.id === reciterId);
+    const configuredUrl = reciter?.surahAudioUrls?.[surahNumber] ??
+      (reciter?.fullSurahAudioBaseUrl
+        ? `${reciter.fullSurahAudioBaseUrl}${String(surahNumber).padStart(3, '0')}.mp3`
+        : undefined);
+    if (configuredUrl !== audioUrl) {
+      setAudioError('رابط التلاوة لا يطابق بيانات القارئ');
+      return false;
+    }
+    return startFullSurah({ surahNumber, reciterId }, true);
+  }, [startFullSurah]);
+
+  const playFullSurahQueue = React.useCallback((
+    items: QuranFullSurahQueueItem[],
+    startIndex = 0
+  ) => {
     if (
-      !Number.isInteger(surahNumber) ||
-      surahNumber < 1 ||
-      surahNumber > 114 ||
-      !QURAN_RECITERS.some((reciter) => reciter.id === reciterId)
+      items.length === 0 ||
+      !Number.isInteger(startIndex) ||
+      startIndex < 0 ||
+      startIndex >= items.length
     ) {
-      setAudioError('تعذر تحديد السورة أو القارئ المطلوب');
+      setAudioError('قائمة التشغيل فارغة أو لا تحتوي على سورة صالحة');
       return false;
     }
-
-    let source: URL;
-    try {
-      source = new URL(audioUrl);
-    } catch {
-      setAudioError('رابط التلاوة غير صالح');
+    fullSurahQueueRef.current = items.map((item) => ({ ...item }));
+    fullSurahQueueIndexRef.current = startIndex;
+    setFullSurahQueueIndex(startIndex);
+    if (!startFullSurah(items[startIndex])) {
+      fullSurahQueueRef.current = [];
+      fullSurahQueueIndexRef.current = -1;
+      setFullSurahQueueIndex(-1);
       return false;
     }
-    if (source.protocol !== 'https:') {
-      setAudioError('مصدر التلاوة غير آمن');
-      return false;
-    }
-
-    playlistRequestRef.current += 1;
-    currentSurahRef.current = surahNumber;
-    currentTrackIndexRef.current = 0;
-    selectedReciterRef.current = reciterId;
-    playlistKeyRef.current = `full:${surahNumber}:${reciterId}`;
-    tracksRef.current = [{ numberInSurah: 1, sources: [source.href] }];
-    setCurrentSurahNumber(surahNumber);
-    setSelectedReciter(reciterId);
-    playTrackAt(0, 0, true);
     return true;
-  }, [playTrackAt]);
+  }, [startFullSurah]);
 
   const playAyah = React.useCallback(
     (surahNumber: number, ayahNumber: number) =>
@@ -338,6 +423,9 @@ export function useQuranAudio() {
     currentTrackIndexRef.current = -1;
     tracksRef.current = [];
     playlistKeyRef.current = '';
+    fullSurahQueueRef.current = [];
+    fullSurahQueueIndexRef.current = -1;
+    setFullSurahQueueIndex(-1);
     const audio = audioRef.current;
     if (audio) {
       audio.pause();
@@ -381,6 +469,12 @@ export function useQuranAudio() {
     setRepeatTrack(next);
   }, []);
 
+  const skipFullSurahQueue = React.useCallback((offset: -1 | 1) => {
+    const nextIndex = fullSurahQueueIndexRef.current + offset;
+    if (nextIndex < 0 || nextIndex >= fullSurahQueueRef.current.length) return false;
+    return playFullSurahQueueItem(nextIndex);
+  }, [playFullSurahQueueItem]);
+
   return {
     audioRef,
     selectedReciter,
@@ -396,8 +490,12 @@ export function useQuranAudio() {
     volume,
     playbackRate,
     repeatTrack,
+    fullSurahQueueIndex,
+    fullSurahQueueLength: fullSurahQueueRef.current.length,
+    skipFullSurahQueue,
     playSurah,
     playFullSurah,
+    playFullSurahQueue,
     playAyah,
     togglePlayback,
     retry,

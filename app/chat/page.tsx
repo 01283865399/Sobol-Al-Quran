@@ -53,6 +53,12 @@ export default function ChatPage() {
   const logRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
+    document.body.classList.add('assistant-chat-active');
+    window.scrollTo(0, 0);
+    return () => document.body.classList.remove('assistant-chat-active');
+  }, []);
+
+  React.useEffect(() => {
     const log = logRef.current;
     log?.scrollTo({ top: log.scrollHeight, behavior: 'smooth' });
   }, [messages, isSending]);
@@ -245,22 +251,9 @@ export default function ChatPage() {
   };
 
   return (
-    <PageLayout>
-      <div className="assistant-chat-page w-full px-4 py-7 lg:px-8 lg:py-10">
-        <div className="assistant-chat__intro">
-          <div className="assistant-chat__intro-icon" aria-hidden="true">
-            <Sparkles />
-          </div>
-          <div>
-            <p className="assistant-chat__eyebrow">مساعد سُبُل الذكي</p>
-            <h1 className="font-kufi">اسأل، وتعلّم، واستكشف</h1>
-            <p className="assistant-chat__intro-copy">
-              مساحة هادئة لأسئلتك العامة والإرشاد إلى خدمات الموقع.
-            </p>
-          </div>
-        </div>
-
-        <section className="assistant-chat min-w-0 overflow-hidden">
+    <PageLayout showHomeLink={false} mainClassName="assistant-chat-layout">
+      <div className="assistant-chat-page w-full">
+        <section className="assistant-chat min-h-0 min-w-0 overflow-hidden">
           <div className="assistant-chat__header">
             <div className="assistant-chat__identity">
               <div className="assistant-chat__avatar" aria-hidden="true">
@@ -268,14 +261,10 @@ export default function ChatPage() {
               </div>
               <div className="min-w-0">
                 <h2 className="font-kufi font-bold">المساعد الإسلامي</h2>
-                <p>إجابات تعليمية مباشرة</p>
+                <p>اسأل عن القرآن أو عن خدمات سُبُل</p>
               </div>
             </div>
             <div className="assistant-chat__header-actions">
-              <span className="assistant-chat__online">
-                <span aria-hidden="true" />
-                جاهز للمساعدة
-              </span>
               <Button
                 type="button"
                 variant="outline"
@@ -285,7 +274,7 @@ export default function ChatPage() {
                 className="assistant-chat__new-button shrink-0 gap-2"
               >
                 <Plus className="h-4 w-4" aria-hidden="true" />
-                محادثة جديدة
+                <span>محادثة جديدة</span>
               </Button>
             </div>
           </div>
@@ -296,7 +285,7 @@ export default function ChatPage() {
             aria-label="سجل المحادثة"
             aria-live="polite"
             aria-relevant="additions text"
-            className="assistant-chat__log max-h-[62vh] min-h-[380px] space-y-5 overflow-y-auto p-5 sm:p-7"
+            className="assistant-chat__log min-h-0 flex-1 space-y-5 overflow-y-auto p-5 sm:p-7"
           >
             {messages.length === 0 ? (
               <div className="assistant-chat__welcome">
@@ -306,7 +295,7 @@ export default function ChatPage() {
                 <p className="assistant-chat__welcome-label">مرحبًا بك</p>
                 <h3 className="font-kufi">كيف أستطيع مساعدتك اليوم؟</h3>
                 <p className="assistant-chat__welcome-copy">
-                  اسأل عن موضوع عام أو عن طريقة استخدام خدمات سُبُل. اختر سؤالًا مقترحًا أو اكتب سؤالك مباشرة.
+                  كيف أقدر أساعدك؟ ابدأ بسؤال أو اختر أحد الاقتراحات.
                 </p>
                 <div className="assistant-chat__suggestions">
                   {suggestions.map((suggestion) => (
@@ -401,37 +390,31 @@ export default function ChatPage() {
                 onKeyDown={handleKeyDown}
                 placeholder="اكتب سؤالك هنا…"
                 maxLength={MAX_MESSAGE_LENGTH}
-                rows={2}
+                rows={1}
                 disabled={isSending}
-                className="assistant-chat__textarea min-h-[60px] resize-y font-cairo leading-7"
+                className="assistant-chat__textarea min-h-[48px] resize-none font-cairo leading-7"
               />
               <Button
                 type="submit"
                 disabled={isSending || !input.trim()}
                 className="assistant-chat__send h-12 shrink-0 gap-2"
+                aria-label="إرسال الرسالة"
               >
                 {isSending ? (
                   <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
                 ) : (
                   <Send className="h-4 w-4" aria-hidden="true" />
                 )}
-                إرسال
               </Button>
             </form>
             <div className="assistant-chat__composer-meta">
-              <span>
-                <kbd>Enter</kbd> للإرسال
-                <span aria-hidden="true"> · </span>
-                <kbd>Shift + Enter</kbd> لسطر جديد
-              </span>
-              <span>{input.length} / {MAX_MESSAGE_LENGTH}</span>
+              <span>قد يخطئ المساعد؛ راجع المصادر وأهل العلم.</span>
+              {input.length > MAX_MESSAGE_LENGTH - 100 && (
+                <span>{input.length} / {MAX_MESSAGE_LENGTH}</span>
+              )}
             </div>
           </div>
         </section>
-        <p className="assistant-chat__disclaimer">
-          <ShieldCheck aria-hidden="true" />
-          الإجابات للمعلومات العامة، وليست فتوى أو بديلًا عن الرجوع إلى مصدر موثوق.
-        </p>
       </div>
     </PageLayout>
   );

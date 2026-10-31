@@ -23,7 +23,10 @@ import type { useQuranAudio } from '@/hooks/use-quran-audio';
 import { useGlassPlayerSize } from '@/hooks/use-glass-player-size';
 import { useGeneratedAmbience } from '@/hooks/use-generated-ambience';
 import type { QuranReciter, SurahMeta } from '@/lib/quran-api';
-import { LISTENING_AMBIENCES } from '@/lib/listening-ambiences';
+import {
+  HARAMAIN_AMBIENCE_IDS,
+  LISTENING_AMBIENCES,
+} from '@/lib/listening-ambiences';
 
 type QuranAudioPlayer = ReturnType<typeof useQuranAudio>;
 
@@ -35,6 +38,7 @@ interface QuranListeningPlayerProps {
   player: QuranAudioPlayer;
   playSurah?: (surahNumber: number) => void;
   fullSurahMode?: boolean;
+  ambienceProfile?: 'haramain';
 }
 
 function formatTime(seconds: number): string {
@@ -50,11 +54,22 @@ export function QuranListeningPlayer({
   player,
   playSurah,
   fullSurahMode = false,
+  ambienceProfile,
 }: QuranListeningPlayerProps) {
   const { style: playerSizeStyle, handles: resizeHandles } = useGlassPlayerSize();
   const generatedAmbience = useGeneratedAmbience();
   const prefersReducedMotion = useReducedMotion();
-  const [ambienceId, setAmbienceId] = React.useState<(typeof LISTENING_AMBIENCES)[number]['id']>('rain');
+  const defaultAmbienceId =
+    ambienceProfile === 'haramain' ? HARAMAIN_AMBIENCE_IDS[0] : 'rain';
+  const ambienceOptions =
+    ambienceProfile === 'haramain'
+      ? LISTENING_AMBIENCES.filter((item) =>
+          (HARAMAIN_AMBIENCE_IDS as readonly string[]).includes(item.id)
+        )
+      : LISTENING_AMBIENCES.filter(
+          (item) => !(HARAMAIN_AMBIENCE_IDS as readonly string[]).includes(item.id)
+        );
+  const [ambienceId, setAmbienceId] = React.useState<(typeof LISTENING_AMBIENCES)[number]['id']>(defaultAmbienceId);
   const [ambienceMenuOpen, setAmbienceMenuOpen] = React.useState(false);
   const [playlistOpen, setPlaylistOpen] = React.useState(false);
   const [volumeOpen, setVolumeOpen] = React.useState(false);
@@ -76,7 +91,7 @@ export function QuranListeningPlayer({
 
   const currentSurah = surahs.find((surah) => surah.number === player.currentSurahNumber);
   const currentIndex = surahs.findIndex((surah) => surah.number === player.currentSurahNumber);
-  const ambience = LISTENING_AMBIENCES.find((item) => item.id === ambienceId) ?? LISTENING_AMBIENCES[0];
+  const ambience = ambienceOptions.find((item) => item.id === ambienceId) ?? ambienceOptions[0];
   activeAmbienceIdRef.current = ambience.id;
   const Icon = ambience.icon;
   const isFavorite =
@@ -155,7 +170,7 @@ export function QuranListeningPlayer({
     const audio = ambienceAudioRef.current;
     if (ambience.audioSource && audio && ambienceVolume > 0 && !ambienceSoundEnabled) {
       playAmbienceAudio(audio);
-    } else if (ambience.video && !ambience.audioSource && ambienceVolume > 0 && !ambienceSoundEnabled) {
+    } else if (ambience.soundMode === 'generated' && ambienceVolume > 0 && !ambienceSoundEnabled) {
       void generatedAmbience.play(ambience.id, ambienceVolume).then(() => {
         setAmbienceSoundEnabled(true);
         setAmbienceAudioBlocked(false);
@@ -209,7 +224,7 @@ export function QuranListeningPlayer({
       if (!audio) return;
       audio.volume = volume;
       playAmbienceAudio(audio);
-    } else if (ambience.video) {
+    } else if (ambience.soundMode === 'generated') {
       generatedAmbience.setVolume(volume);
       if (!ambienceSoundEnabled) {
         void generatedAmbience.play(ambience.id, volume).then(() => {
@@ -230,7 +245,7 @@ export function QuranListeningPlayer({
       setAmbienceVolume(volume);
       if (ambience.audioSource && audio) {
         playAmbienceAudio(audio);
-      } else if (ambience.video) {
+      } else if (ambience.soundMode === 'generated') {
         void generatedAmbience.play(ambience.id, volume).then(() => {
           setAmbienceSoundEnabled(true);
           setAmbienceAudioBlocked(false);
@@ -246,6 +261,15 @@ export function QuranListeningPlayer({
     setAmbienceSoundEnabled(false);
     setAmbienceVolume(0);
   };
+
+  React.useEffect(() => {
+    setAmbienceId(defaultAmbienceId);
+    setAmbienceMenuOpen(false);
+    setFailedVideoId(null);
+    setAmbienceSoundEnabled(false);
+    ambienceAudioRef.current?.pause();
+    generatedAmbience.stop();
+  }, [defaultAmbienceId, generatedAmbience]);
 
   React.useEffect(() => {
     try {
@@ -332,7 +356,7 @@ export function QuranListeningPlayer({
     if (
       !open ||
       !ambience.video ||
-      ambience.audioSource ||
+      ambience.soundMode !== 'generated' ||
       !ambienceSoundEnabled ||
       ambienceVolume === 0
     ) {
@@ -344,6 +368,7 @@ export function QuranListeningPlayer({
     ambience.audioSource,
     ambience.id,
     ambience.video,
+    ambience.soundMode,
     ambienceSoundEnabled,
     ambienceVolume,
     generatedAmbience,
@@ -412,6 +437,10 @@ export function QuranListeningPlayer({
   }, [open, playlistOpen, ambienceMenuOpen, volumeOpen, onClose]);
 
   const playAdjacentSurah = (offset: -1 | 1) => {
+    if (player.fullSurahQueueLength > 0) {
+      player.skipFullSurahQueue(offset);
+      return;
+    }
     const nextSurah = surahs[currentIndex + offset];
     if (!nextSurah) return;
     if (playSurah) playSurah(nextSurah.number);
@@ -460,7 +489,7 @@ export function QuranListeningPlayer({
           muted
           loop
           playsInline
-          preload="none"
+          preload={ambienceProfile === 'haramain' ? 'auto' : 'none'}
           aria-hidden="true"
           onError={() => {
             if (activeAmbienceIdRef.current !== ambience.id) return;
@@ -509,8 +538,12 @@ export function QuranListeningPlayer({
             <ChevronDown className="quran-listening__chevron" aria-hidden="true" />
           </button>
           {ambienceMenuOpen && (
-            <div className="quran-listening__ambience-menu" role="listbox" aria-label="اختر الخلفية">
-              {LISTENING_AMBIENCES.map((option) => {
+            <div
+              className={`quran-listening__ambience-menu${ambienceProfile === 'haramain' ? ' is-haramain' : ''}`}
+              role="listbox"
+              aria-label="اختر الخلفية"
+            >
+              {ambienceOptions.map((option) => {
                 const OptionIcon = option.icon;
                 const selected = option.id === ambience.id;
                 return (
@@ -528,7 +561,7 @@ export function QuranListeningPlayer({
                         setAmbienceSoundEnabled(true);
                         setAmbienceAudioBlocked(false);
                         setAmbienceAudioError(false);
-                      } else if (option.video && ambienceVolume > 0) {
+                      } else if (option.soundMode === 'generated' && ambienceVolume > 0) {
                         void generatedAmbience.play(option.id, ambienceVolume).then(() => {
                           setAmbienceSoundEnabled(true);
                           setAmbienceAudioBlocked(false);
@@ -549,6 +582,25 @@ export function QuranListeningPlayer({
                   </button>
                 );
               })}
+              {ambienceProfile === 'haramain' && (
+                <div className="quran-listening__ambience-credits">
+                {ambienceOptions.map((option) => (
+                  'sourceAttribution' in option && 'sourceUrl' in option ? (
+                    <a
+                      key={option.id}
+                      href={option.sourceUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {option.label}: {option.sourceAttribution}
+                    </a>
+                  ) : null
+                ))}
+                <a href="https://www.pexels.com/license/" target="_blank" rel="noreferrer">
+                  ترخيص Pexels
+                </a>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -622,7 +674,9 @@ export function QuranListeningPlayer({
             type="button"
             className="quran-listening__control"
             onClick={() => playAdjacentSurah(-1)}
-            disabled={currentIndex <= 0}
+            disabled={player.fullSurahQueueLength > 0
+              ? player.fullSurahQueueIndex <= 0
+              : currentIndex <= 0}
             aria-label="السورة السابقة"
             title="السورة السابقة"
           >
@@ -648,7 +702,9 @@ export function QuranListeningPlayer({
             type="button"
             className="quran-listening__control"
             onClick={() => playAdjacentSurah(1)}
-            disabled={currentIndex < 0 || currentIndex >= surahs.length - 1}
+            disabled={player.fullSurahQueueLength > 0
+              ? player.fullSurahQueueIndex >= player.fullSurahQueueLength - 1
+              : currentIndex < 0 || currentIndex >= surahs.length - 1}
             aria-label="السورة التالية"
             title="السورة التالية"
           >
@@ -742,7 +798,7 @@ export function QuranListeningPlayer({
                     aria-label="مستوى صوت القارئ"
                   />
                 </label>
-                {ambience.video ? (
+                {ambience.video && ambience.soundMode !== 'none' ? (
                   <div className="quran-listening__volume-row">
                     {ambienceVolume === 0 || ambienceAudioBlocked ? (
                       <VolumeX aria-hidden="true" />

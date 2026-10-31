@@ -9,8 +9,11 @@ const HomePage = lazy(() => import('@/app/page'));
 const PrivacyPage = lazy(() => import('@/app/privacy/page'));
 const QuranListeningHomePage = lazy(() => import('@/app/quran/page'));
 const QuranPage = lazy(() => import('@/app/quran/read/page'));
+const QuranPlaylistsPage = lazy(() => import('@/app/quran/playlists/page'));
+const RecitersPage = lazy(() => import('@/app/quran/reciters/page'));
 const ReciterPage = lazy(() => import('@/app/quran/reciters/[reciterId]/page'));
 const RadioPage = lazy(() => import('@/app/radio/page'));
+const StoriesPage = lazy(() => import('@/app/stories/page'));
 const TasbihPage = lazy(() => import('@/app/tasbih/page'));
 const TermsPage = lazy(() => import('@/app/terms/page'));
 
@@ -38,8 +41,11 @@ export function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/quran" element={<QuranListeningHomePage />} />
         <Route path="/quran/read" element={<QuranPage />} />
+        <Route path="/quran/playlists" element={<QuranPlaylistsPage />} />
+        <Route path="/quran/reciters" element={<RecitersPage />} />
         <Route path="/quran/reciters/:reciterId" element={<ReciterPage />} />
         <Route path="/radio" element={<RadioPage />} />
+        <Route path="/stories" element={<StoriesPage />} />
         <Route path="/hadith" element={<HadithPage />} />
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/tasbih" element={<TasbihPage />} />

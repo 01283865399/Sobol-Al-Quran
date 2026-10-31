@@ -13,6 +13,7 @@ export interface QuranAyah {
   number: number;
   numberInSurah: number;
   text: string;
+  page: number;
   sajda: boolean | object;
 }
 
@@ -49,8 +50,10 @@ export interface QuranReciter {
   fullSurahAudioBaseUrl?: string;
   country?: 'Egypt';
   recitationCategory: 'murattal' | 'mujawwad';
+  honorTier?: 'gold' | 'bronze';
   recitationStyle?: string;
   surahAudioUrls?: Partial<Record<number, string>>;
+  availableSurahNumbers?: number[];
   recordingsSourceUrl?: string;
   ayahAudioEdition?: string | null;
   portraitUrl?: string;
@@ -70,9 +73,9 @@ export const QURAN_RECITERS: QuranReciter[] = [
     bio: 'قارئ سعودي، تتوفر هنا تلاواته المرتلة برواية حفص عن عاصم.',
     recitationCategory: 'murattal',
     fullSurahAudioBaseUrl: 'https://cdn.mp3quran.net/audio/abdullah-basfar/r1/',
-    portraitUrl: 'https://artwork.qurancentral.com/abdullah-basfar-300x300.jpg',
-    portraitSourceUrl: 'https://qurancentral.com/audio/abdullah-basfar',
-    portraitAttribution: 'Quran Central',
+    portraitUrl: '/images/reciters/abdullah-basfar.jpg',
+    portraitSourceUrl: 'https://way2quran.com/ar/reciters/abdullah-basfar',
+    portraitAttribution: 'الطريق إلى القرآن',
   },
   {
     id: 'ar.abdurrahmaansudais',
@@ -93,6 +96,7 @@ export const QURAN_RECITERS: QuranReciter[] = [
     bio: 'قارئ مصري من أعلام التلاوة، تتوفر هنا تلاواته المرتلة كاملة.',
     country: 'Egypt',
     recitationCategory: 'murattal',
+    honorTier: 'gold',
     fullSurahAudioBaseUrl: 'https://cdn.mp3quran.net/audio/abdulbasit-abdulsamad/r3/',
     portraitUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ee/Abdul_Basit_%27Abd_us-Samad_with_King_Faisal.jpg/330px-Abdul_Basit_%27Abd_us-Samad_with_King_Faisal.jpg',
     portraitSourceUrl: 'https://commons.wikimedia.org/wiki/File:Abdul_Basit_%27Abd_us-Samad_with_King_Faisal.jpg',
@@ -106,6 +110,7 @@ export const QURAN_RECITERS: QuranReciter[] = [
     bio: 'قارئ مصري من أعلام التلاوة المجوّدة، تتوفر هنا سور المصحف المجوّد.',
     country: 'Egypt',
     recitationCategory: 'mujawwad',
+    honorTier: 'gold',
     recitationStyle: 'المصحف المجود',
     fullSurahAudioBaseUrl: 'https://cdn.mp3quran.net/audio/mustafa-ismail/r2/',
     portraitUrl: 'https://upload.wikimedia.org/wikipedia/commons/5/55/Mostafa_Ismaeel.jpg',
@@ -120,6 +125,7 @@ export const QURAN_RECITERS: QuranReciter[] = [
     bio: 'قارئ مصري، تتوفر هنا تلاواته المجوّدة لسور القرآن الكريم.',
     country: 'Egypt',
     recitationCategory: 'mujawwad',
+    honorTier: 'gold',
     recitationStyle: 'المصحف المجود',
     fullSurahAudioBaseUrl: 'https://cdn.mp3quran.net/audio/muhammad-minshawi/r2/',
     portraitUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/ee/Elminshwey.jpg',
@@ -137,9 +143,9 @@ export const QURAN_RECITERS: QuranReciter[] = [
     recitationStyle: 'المصحف الكامل',
     fullSurahAudioBaseUrl:
       'https://archive.org/download/alshahhat_____--mohammad---anwar----128kb---mp3----quran/',
-    portraitUrl: 'https://artwork.qurancentral.com/muhammad-anwar-shahat-300x300.jpg',
-    portraitSourceUrl: 'https://qurancentral.com/audio/muhammad-anwar-shahat',
-    portraitAttribution: 'Quran Central',
+    portraitUrl: '/images/reciters/al-shahat-muhammad-anwar.jpg',
+    portraitSourceUrl: 'https://way2quran.com/ar/reciters/al-shahat-muhammad-anwar',
+    portraitAttribution: 'الطريق إلى القرآن',
     recordingsSourceUrl:
       'https://archive.org/details/alshahhat_____--mohammad---anwar----128kb---mp3----quran',
     ayahAudioEdition: null,
@@ -211,11 +217,12 @@ export const QURAN_RECITERS: QuranReciter[] = [
     bio: 'قارئ مصري من أعلام التلاوة، تتوفر هنا سور المصحف المجوّد.',
     country: 'Egypt',
     recitationCategory: 'mujawwad',
+    honorTier: 'gold',
     recitationStyle: 'المصحف المجود',
     fullSurahAudioBaseUrl: 'https://cdn.mp3quran.net/audio/mahmoud-banna/r2/',
-    portraitUrl: 'https://artwork.qurancentral.com/mahmoud-ali-al-banna-300x300.jpg',
-    portraitSourceUrl: 'https://qurancentral.com/audio/mahmoud-ali-al-banna',
-    portraitAttribution: 'Quran Central',
+    portraitUrl: '/images/reciters/mahmoud-ali-al-banna.jpg',
+    portraitSourceUrl: 'https://way2quran.com/ar/reciters/mahmoud-ali-al-banna',
+    portraitAttribution: 'الطريق إلى القرآن',
   },
   {
     id: 'ar.tablawi-mujawwad',
@@ -224,11 +231,12 @@ export const QURAN_RECITERS: QuranReciter[] = [
     bio: 'قارئ مصري من أعلام التلاوة، تتوفر هنا سور المصحف المجوّد.',
     country: 'Egypt',
     recitationCategory: 'mujawwad',
+    honorTier: 'gold',
     recitationStyle: 'المصحف المجود',
     fullSurahAudioBaseUrl: 'https://cdn.mp3quran.net/audio/muhammad-tablawi/r2/',
-    portraitUrl: 'https://artwork.qurancentral.com/mohamed-tablawi-300x300.jpg',
-    portraitSourceUrl: 'https://qurancentral.com/audio/mohamed-tablawi',
-    portraitAttribution: 'Quran Central',
+    portraitUrl: '/images/reciters/muhammad-mahmoud-al-tablawi.jpg',
+    portraitSourceUrl: 'https://way2quran.com/ar/reciters/muhammad-mahmoud-al-tablawi',
+    portraitAttribution: 'الطريق إلى القرآن',
   },
   {
     id: 'ar.shaatree',
@@ -237,9 +245,9 @@ export const QURAN_RECITERS: QuranReciter[] = [
     bio: 'قارئ سعودي، تتوفر هنا تلاواته المرتلة برواية حفص عن عاصم.',
     recitationCategory: 'murattal',
     fullSurahAudioBaseUrl: 'https://cdn.mp3quran.net/audio/abubakr-shatri/r1/',
-    portraitUrl: 'https://artwork.qurancentral.com/abu-bakr-al-shatri-300x300.jpg',
-    portraitSourceUrl: 'https://qurancentral.com/audio/abu-bakr-al-shatri',
-    portraitAttribution: 'Quran Central',
+    portraitUrl: '/images/reciters/abu-bakr-al-shatri.jpg',
+    portraitSourceUrl: 'https://way2quran.com/ar/reciters/abu-bakr-al-shatri',
+    portraitAttribution: 'الطريق إلى القرآن',
   },
   {
     id: 'ar.hanirifai',
@@ -248,9 +256,9 @@ export const QURAN_RECITERS: QuranReciter[] = [
     bio: 'قارئ سعودي، تتوفر هنا تلاواته المرتلة للقرآن الكريم.',
     recitationCategory: 'murattal',
     fullSurahAudioBaseUrl: 'https://cdn.mp3quran.net/audio/hani-rifai/r1/',
-    portraitUrl: 'https://artwork.qurancentral.com/hani-ar-rifai-300x300.jpg',
-    portraitSourceUrl: 'https://qurancentral.com/audio/hani-ar-rifai',
-    portraitAttribution: 'Quran Central',
+    portraitUrl: '/images/reciters/hani-al-rifai.jpg',
+    portraitSourceUrl: 'https://way2quran.com/ar/reciters/hani-al-rifai',
+    portraitAttribution: 'الطريق إلى القرآن',
   },
   {
     id: 'ar.alafasy',
@@ -271,6 +279,7 @@ export const QURAN_RECITERS: QuranReciter[] = [
     bio: 'قارئ مصري من أعلام القراء، تتوفر هنا تلاواته المرتلة للقرآن الكريم.',
     country: 'Egypt',
     recitationCategory: 'murattal',
+    honorTier: 'gold',
     fullSurahAudioBaseUrl: 'https://cdn.mp3quran.net/audio/mahmoud-husary/r1/',
     portraitUrl: 'https://upload.wikimedia.org/wikipedia/commons/7/70/Hussary.jpg',
     portraitSourceUrl: 'https://commons.wikimedia.org/wiki/File:Hussary.jpg',
@@ -290,6 +299,108 @@ export const QURAN_RECITERS: QuranReciter[] = [
     portraitAttribution: 'Km.jahiruddin md. Babur',
   },
   {
+    id: 'ar.saud-shuraim',
+    name: 'سعود الشريم',
+    englishName: 'Saud Al-Shuraim',
+    bio: 'إمام وخطيب سابق بالمسجد الحرام، تتوفر هنا تلاواته المرتلة كاملة.',
+    recitationCategory: 'murattal',
+    honorTier: 'gold',
+    fullSurahAudioBaseUrl: 'https://cdn.mp3quran.net/audio/saud-shuraim/r1/',
+    portraitUrl:
+      'https://upload.wikimedia.org/wikipedia/commons/5/5d/Saud_Shuraim_doing_the_Khutbah.png',
+    portraitSourceUrl:
+      'https://commons.wikimedia.org/wiki/File:Saud_Shuraim_doing_the_Khutbah.png',
+    portraitLicense: 'CC BY-SA 4.0',
+    portraitAttribution: 'Sobi2203',
+  },
+  {
+    id: 'ar.salah-budair',
+    name: 'صلاح البدير',
+    englishName: 'Salah Al-Budair',
+    bio: 'إمام وخطيب المسجد النبوي، تتوفر هنا تلاواته المرتلة كاملة.',
+    recitationCategory: 'murattal',
+    honorTier: 'gold',
+    fullSurahAudioBaseUrl: 'https://cdn.mp3quran.net/audio/salah-budair/r1/',
+    portraitUrl:
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/df/Salah_Ibn_Mohammed_Al_Budair.jpg/500px-Salah_Ibn_Mohammed_Al_Budair.jpg',
+    portraitSourceUrl:
+      'https://commons.wikimedia.org/wiki/File:Salah_Ibn_Mohammed_Al_Budair.jpg',
+    portraitLicense: 'CC BY-SA 4.0',
+    portraitAttribution: 'Lafdi93',
+  },
+  {
+    id: 'ar.abdullah-juhani',
+    name: 'عبدالله عواد الجهني',
+    englishName: 'Abdullah Awad Al-Juhany',
+    bio: 'إمام المسجد الحرام، تتوفر هنا تلاواته المرتلة كاملة.',
+    recitationCategory: 'murattal',
+    honorTier: 'gold',
+    fullSurahAudioBaseUrl: 'https://cdn.mp3quran.net/audio/abdullah-juhani/r1/',
+    portraitUrl:
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/25/Abdullah_Al_Juhany_%28Cropped%29.png/500px-Abdullah_Al_Juhany_%28Cropped%29.png',
+    portraitSourceUrl:
+      'https://commons.wikimedia.org/wiki/File:Abdullah_Al_Juhany_(Cropped).png',
+    portraitLicense: 'CC BY-SA 4.0',
+    portraitAttribution: 'الشيخ هيثم الدخين',
+  },
+  {
+    id: 'ar.khalid-ghamdi',
+    name: 'خالد الغامدي',
+    englishName: 'Khalid Al-Ghamdi',
+    bio: 'إمام سابق للمسجد الحرام، تتوفر هنا مجموعة من تلاواته المرتلة.',
+    recitationCategory: 'murattal',
+    honorTier: 'gold',
+    fullSurahAudioBaseUrl: 'https://cdn.mp3quran.net/audio/khalid-ghamdi/r1/',
+    portraitUrl: 'https://www.assabile.com/media/portraits/387-200.webp',
+    portraitSourceUrl: 'https://www.assabile.com/khalid-al-ghamdi',
+    portraitAttribution: 'Assabile',
+  },
+  {
+    id: 'ar.abdulbari-thubaiti',
+    name: 'عبدالباري الثبيتي',
+    englishName: 'Abdulbari Al-Thubaity',
+    bio: 'إمام وخطيب المسجد النبوي، تتوفر هنا تلاواته المرتلة كاملة.',
+    recitationCategory: 'murattal',
+    honorTier: 'gold',
+    fullSurahAudioBaseUrl: 'https://cdn.mp3quran.net/audio/abdulbari-thubaiti/r1/',
+    portraitUrl:
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/ff/Abdulbari_ath-Thubaity_delivering_sermon_at_Prophet%27s_Mosque_Medina.jpg/500px-Abdulbari_ath-Thubaity_delivering_sermon_at_Prophet%27s_Mosque_Medina.jpg',
+    portraitSourceUrl:
+      'https://commons.wikimedia.org/wiki/File:Abdulbari_ath-Thubaity_delivering_sermon_at_Prophet%27s_Mosque_Medina.jpg',
+    portraitLicense: 'CC BY-SA 4.0',
+    portraitAttribution: 'Unknown author',
+  },
+  {
+    id: 'ar.abdulmohsen-qasim',
+    name: 'عبدالمحسن القاسم',
+    englishName: 'Abdulmohsen Al-Qasim',
+    bio: 'إمام وخطيب المسجد النبوي، تتوفر هنا تلاواته المرتلة كاملة.',
+    recitationCategory: 'murattal',
+    honorTier: 'gold',
+    fullSurahAudioBaseUrl: 'https://cdn.mp3quran.net/audio/abdulmohsen-qasim/r1/',
+    portraitUrl:
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2c/Abdul_Mohsin_Al-Qasim.jpg/500px-Abdul_Mohsin_Al-Qasim.jpg',
+    portraitSourceUrl:
+      'https://commons.wikimedia.org/wiki/File:Abdul_Mohsin_Al-Qasim.jpg',
+    portraitLicense: 'CC BY 4.0',
+    portraitAttribution: 'শেখ শরীফ',
+  },
+  {
+    id: 'ar.ali-jaber',
+    name: 'علي جابر',
+    englishName: 'Ali Jaber',
+    bio: 'إمام وخطيب سابق للمسجد الحرام، تتوفر هنا تلاواته المرتلة كاملة.',
+    recitationCategory: 'murattal',
+    honorTier: 'gold',
+    fullSurahAudioBaseUrl: 'https://cdn.mp3quran.net/audio/ali-jaber/r1/',
+    portraitUrl:
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/8/84/Ali_Jaber_leading_in_Masjid_al-Haram_1988.png/500px-Ali_Jaber_leading_in_Masjid_al-Haram_1988.png',
+    portraitSourceUrl:
+      'https://commons.wikimedia.org/wiki/File:Ali_Jaber_leading_in_Masjid_al-Haram_1988.png',
+    portraitLicense: 'CC BY-SA 3.0',
+    portraitAttribution: 'Unknown author',
+  },
+  {
     id: 'ar.yasseraldossari',
     name: 'ياسر الدوسري',
     englishName: 'Yasser Al-Dosari',
@@ -297,9 +408,9 @@ export const QURAN_RECITERS: QuranReciter[] = [
     recitationCategory: 'murattal',
     fullSurahAudioBaseUrl: 'https://cdn.mp3quran.net/audio/yasser-dosari/r1/',
     ayahAudioEdition: null,
-    portraitUrl: 'https://artwork.qurancentral.com/yasser-al-dossari-300x300.jpg',
-    portraitSourceUrl: 'https://qurancentral.com/audio/yasser-al-dossari',
-    portraitAttribution: 'Quran Central',
+    portraitUrl: '/images/reciters/yasser-al-dosary.jpg',
+    portraitSourceUrl: 'https://way2quran.com/ar/reciters/yasser-al-dosary',
+    portraitAttribution: 'الطريق إلى القرآن',
   },
   {
     id: 'ar.nasseralqatami',
@@ -309,9 +420,9 @@ export const QURAN_RECITERS: QuranReciter[] = [
     recitationCategory: 'murattal',
     fullSurahAudioBaseUrl: 'https://cdn.mp3quran.net/audio/nasser-qatami/r1/',
     ayahAudioEdition: null,
-    portraitUrl: 'https://artwork.qurancentral.com/nasser-al-qatami-300x300.jpg',
-    portraitSourceUrl: 'https://qurancentral.com/audio/nasser-al-qatami',
-    portraitAttribution: 'Quran Central',
+    portraitUrl: '/images/reciters/naser-al-katamy.jpg',
+    portraitSourceUrl: 'https://way2quran.com/ar/reciters/naser-al-katamy',
+    portraitAttribution: 'الطريق إلى القرآن',
   },
   {
     id: 'ar.ahmadnufais',
@@ -321,9 +432,9 @@ export const QURAN_RECITERS: QuranReciter[] = [
     recitationCategory: 'murattal',
     fullSurahAudioBaseUrl: 'https://cdn.mp3quran.net/audio/ahmad-nufais/r1/',
     ayahAudioEdition: null,
-    portraitUrl: 'https://artwork.qurancentral.com/ahmad-alnufais-300x300.jpg',
-    portraitSourceUrl: 'https://qurancentral.com/audio/ahmad-alnufais',
-    portraitAttribution: 'Quran Central',
+    portraitUrl: '/images/reciters/ahmed-al-nafis.jpg',
+    portraitSourceUrl: 'https://way2quran.com/ar/reciters/ahmed-al-nafis',
+    portraitAttribution: 'الطريق إلى القرآن',
   },
   {
     id: 'ar.mahermuaiqly',
@@ -333,9 +444,9 @@ export const QURAN_RECITERS: QuranReciter[] = [
     recitationCategory: 'murattal',
     fullSurahAudioBaseUrl: 'https://cdn.mp3quran.net/audio/maher-muaiqly/r1/',
     ayahAudioEdition: null,
-    portraitUrl: 'https://artwork.qurancentral.com/maher-al-mueaqly-300x300.jpg',
-    portraitSourceUrl: 'https://qurancentral.com/audio/maher-al-mueaqly',
-    portraitAttribution: 'Quran Central',
+    portraitUrl: '/images/reciters/maher-almaikulai.jpg',
+    portraitSourceUrl: 'https://way2quran.com/ar/reciters/maher-almaikulai',
+    portraitAttribution: 'الطريق إلى القرآن',
   },
   {
     id: 'ar.idreesabkar',
@@ -357,9 +468,9 @@ export const QURAN_RECITERS: QuranReciter[] = [
     recitationCategory: 'murattal',
     fullSurahAudioBaseUrl: 'https://cdn.mp3quran.net/audio/khalid-qahtani/r1/',
     ayahAudioEdition: null,
-    portraitUrl: 'https://artwork.qurancentral.com/khaled-al-qahtani-300x300.jpg',
-    portraitSourceUrl: 'https://qurancentral.com/audio/khaled-al-qahtani',
-    portraitAttribution: 'Quran Central',
+    portraitUrl: '/images/reciters/khalid-al-qahtani.jpg',
+    portraitSourceUrl: 'https://way2quran.com/ar/reciters/khalid-al-qahtani',
+    portraitAttribution: 'الطريق إلى القرآن',
   },
   {
     id: 'ar.ahmedalajmi',
@@ -369,9 +480,120 @@ export const QURAN_RECITERS: QuranReciter[] = [
     recitationCategory: 'murattal',
     fullSurahAudioBaseUrl: 'https://cdn.mp3quran.net/audio/ahmad-ajmi/r1/',
     ayahAudioEdition: null,
-    portraitUrl: 'https://artwork.qurancentral.com/ahmed-al-ajmi-300x300.jpg',
-    portraitSourceUrl: 'https://qurancentral.com/audio/ahmed-al-ajmi',
-    portraitAttribution: 'Quran Central',
+    portraitUrl: '/images/reciters/ahmed-al-agamy.jpg',
+    portraitSourceUrl: 'https://way2quran.com/ar/reciters/ahmed-al-agamy',
+    portraitAttribution: 'الطريق إلى القرآن',
+  },
+  {
+    id: 'ar.abdulrahman-massaad',
+    name: 'عبد الرحمن مسعد',
+    englishName: 'Abdulrahman Massaad',
+    bio: 'قارئ مصري، تتوفر هنا مجموعة مختارة من تلاواته المرتلة.',
+    country: 'Egypt',
+    recitationCategory: 'murattal',
+    honorTier: 'bronze',
+    portraitUrl: '/images/reciters/abdulrahman-massaad.jpg',
+    portraitSourceUrl:
+      'https://www.tvquran.com/ar/scholar/372/profile/%D8%B9%D8%A8%D8%AF%D8%A7%D9%84%D8%B1%D8%AD%D9%85%D9%86-%D9%85%D8%B3%D8%B9%D8%AF',
+    portraitAttribution: 'القرآن الكريم تحميل واستماع',
+    surahAudioUrls: {
+      29: archiveAudioUrl('abd-al-rahman-musaad-hafs', 'العنكبوت.mp3'),
+      32: archiveAudioUrl('abd-al-rahman-musaad-hafs', 'السجدة.mp3'),
+      49: archiveAudioUrl('abd-al-rahman-musaad-hafs', 'الحجرات.mp3'),
+      73: archiveAudioUrl('abd-al-rahman-musaad-hafs', 'المزمل.mp3'),
+      78: archiveAudioUrl('abd-al-rahman-musaad-hafs', 'النبأ.mp3'),
+      87: archiveAudioUrl('abd-al-rahman-musaad-hafs', 'الأعلى.mp3'),
+      88: archiveAudioUrl('abd-al-rahman-musaad-hafs', 'الغاشية.mp3'),
+      100: archiveAudioUrl('abd-al-rahman-musaad-hafs', 'العاديات.mp3'),
+      107: archiveAudioUrl('abd-al-rahman-musaad-hafs', 'الماعون.mp3'),
+    },
+    recordingsSourceUrl: 'https://archive.org/details/abd-al-rahman-musaad-hafs',
+    ayahAudioEdition: null,
+  },
+  {
+    id: 'ar.mansour-salimi',
+    name: 'منصور السالمي',
+    englishName: 'Mansour Al-Salmi',
+    bio: 'قارئ سعودي، تتوفر تلاواته المرتلة لسور القرآن الكريم.',
+    recitationCategory: 'murattal',
+    portraitUrl: '/images/reciters/mansour-al-salmi.jpg',
+    portraitSourceUrl: 'https://commons.wikimedia.org/wiki/File:Mansurahsalme.jpg',
+    portraitLicense: 'CC BY-SA 4.0',
+    portraitAttribution: 'Sarah owis / Wikimedia Commons',
+    fullSurahAudioBaseUrl: 'https://cdn.mp3quran.net/audio/mansour-salimi/r1/',
+    recordingsSourceUrl: 'https://mp3quran.net/ar/reciters',
+    ayahAudioEdition: null,
+  },
+  {
+    id: 'ar.hazza-balushi',
+    name: 'هزاع البلوشي',
+    englishName: 'Hazza Al-Balushi',
+    bio: 'قارئ عُماني، تتوفر مجموعة من تلاواته المرتلة.',
+    recitationCategory: 'murattal',
+    portraitUrl: '/images/reciters/hazza-al-balushi.jpg',
+    portraitSourceUrl:
+      'https://commons.wikimedia.org/wiki/File:%D9%87%D8%B2%D8%A7%D8%B9_%D8%A7%D9%84%D8%A8%D9%84%D9%88%D8%B4%D9%8A.jpg',
+    portraitLicense: 'CC BY-SA 4.0',
+    portraitAttribution: 'Ammar molla / Wikimedia Commons',
+    fullSurahAudioBaseUrl: 'https://cdn.mp3quran.net/audio/hazza-balushi/r1/',
+    availableSurahNumbers: [
+      1, 6, 8, 12, 13, 14, 15, 17, 18, 19, 20, 21, 22, 25, 29, 30, 31, 32, 34,
+      35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 49, 50, 51, 52, 53,
+      54, 55, 56, 57, 61, 63, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78,
+      79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96,
+      97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111,
+      112, 113, 114,
+    ],
+    recordingsSourceUrl: 'https://mp3quran.net/ar/reciters',
+    ayahAudioEdition: null,
+  },
+  {
+    id: 'ar.islam-sobhi',
+    name: 'إسلام صبحي',
+    englishName: 'Islam Sobhi',
+    bio: 'قارئ مصري، تتوفر مجموعة من تلاواته المرتلة.',
+    country: 'Egypt',
+    recitationCategory: 'murattal',
+    fullSurahAudioBaseUrl: 'https://cdn.mp3quran.net/audio/islam-sobhi/r1/',
+    portraitUrl: '/images/reciters/islam-sobhi.jpg',
+    portraitSourceUrl: 'https://commons.wikimedia.org/wiki/File:Islam_Sobhi.jpg',
+    portraitLicense: 'CC BY-SA 4.0',
+    portraitAttribution: 'Moaz600 / Wikimedia Commons',
+    availableSurahNumbers: [
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+      22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 38, 41, 42,
+      43, 44, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61,
+      62, 63, 64, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80,
+      81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98,
+      99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112,
+      113, 114,
+    ],
+    recordingsSourceUrl: 'https://mp3quran.net/ar/reciters',
+    ayahAudioEdition: null,
+  },
+  {
+    id: 'ar.muhammad-ayyub-asif',
+    name: 'محمد أيوب عاصف',
+    englishName: 'Muhammad Ayyub Asif',
+    bio: 'قارئ بريطاني، ستتوفر تلاواته للاستماع قريبًا.',
+    recitationCategory: 'murattal',
+    ayahAudioEdition: null,
+  },
+  {
+    id: 'ar.jaber-alqaitan',
+    name: 'جابر القيطان',
+    englishName: 'Jaber Al-Qaitan',
+    bio: 'قارئ كويتي، ستتوفر تلاواته للاستماع قريبًا.',
+    recitationCategory: 'murattal',
+    ayahAudioEdition: null,
+  },
+  {
+    id: 'ar.omar-bin-diaa-aldin',
+    name: 'عمر بن ضياء الدين',
+    englishName: 'Omar bin Diaa Al-Din',
+    bio: 'قارئ مضاف إلى قائمة القراء، وستتوفر تلاواته بعد اعتماد مصدر صوتي موثوق.',
+    recitationCategory: 'murattal',
+    ayahAudioEdition: null,
   },
 ];
 
@@ -429,7 +651,13 @@ export async function fetchSurahText(
   if (
     surah.number !== surahNumber ||
     !Array.isArray(surah.ayahs) ||
-    surah.ayahs.length !== surah.numberOfAyahs
+    surah.ayahs.length !== surah.numberOfAyahs ||
+    surah.ayahs.some((ayah, index) =>
+      ayah.numberInSurah !== index + 1 ||
+      !Number.isInteger(ayah.page) ||
+      ayah.page < 1 ||
+      ayah.page > 604
+    )
   ) {
     throw new Error(`Quran API returned incomplete data for surah ${surahNumber}`);
   }

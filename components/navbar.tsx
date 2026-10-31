@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils';
 
 const navLinks = [
   { href: '/quran', label: 'استمع', icon: BookOpen },
+  { href: '/quran/read', label: 'القراءة', icon: BookOpen },
   { href: '/chat', label: 'المساعد', icon: MessageCircle },
   { href: '/radio', label: 'الإذاعة', icon: ScrollText },
   { href: '/hadith', label: 'الحديث', icon: ScrollText },
@@ -42,7 +43,13 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
+  const isActive = (href: string) => {
+    if (
+      href === '/quran' &&
+      (pathname === '/quran/read' || pathname.startsWith('/quran/read/'))
+    ) return false;
+    return pathname === href || pathname.startsWith(href + '/');
+  };
 
   return (
     <header className={cn('bar', scrolled ? 'shadow-sacred' : '')}>

@@ -2,9 +2,6 @@
 
 import * as React from 'react';
 import {
-  Check,
-  ChevronDown,
-  Headphones,
   ListMusic,
   Loader2,
   Pause,
@@ -17,9 +14,13 @@ import {
   VolumeX,
   X,
 } from 'lucide-react';
-import { LISTENING_AMBIENCES } from '@/lib/listening-ambiences';
-import { useGlassPlayerSize } from '@/hooks/use-glass-player-size';
-import { useGeneratedAmbience } from '@/hooks/use-generated-ambience';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import type { RadioStation } from '@/lib/radio-types';
 
 interface RadioListeningPlayerProps {
@@ -49,20 +50,11 @@ export function RadioListeningPlayer({
   volume,
   onVolumeChange,
 }: RadioListeningPlayerProps) {
-  const { style: playerSizeStyle, handles: resizeHandles } = useGlassPlayerSize();
-  const [ambienceId, setAmbienceId] = React.useState<(typeof LISTENING_AMBIENCES)[number]['id']>('rain');
-  const [ambienceMenuOpen, setAmbienceMenuOpen] = React.useState(false);
   const [playlistOpen, setPlaylistOpen] = React.useState(false);
-  const [volumeOpen, setVolumeOpen] = React.useState(false);
-  const [ambienceVolume, setAmbienceVolume] = React.useState(0.16);
-  const [ambienceSoundEnabled, setAmbienceSoundEnabled] = React.useState(false);
   const [favorites, setFavorites] = React.useState<number[]>([]);
-  const generatedAmbience = useGeneratedAmbience();
   const dialogRef = React.useRef<HTMLDivElement>(null);
-  const backgroundVideoRef = React.useRef<HTMLVideoElement>(null);
+  const stationSelectOpenRef = React.useRef(false);
   const currentIndex = stations.findIndex((item) => item.id === station.id);
-  const ambience = LISTENING_AMBIENCES.find((item) => item.id === ambienceId) ?? LISTENING_AMBIENCES[0];
-  const Icon = ambience.icon;
   const isFavorite = favorites.includes(station.id);
 
   React.useEffect(() => {
@@ -96,36 +88,19 @@ export function RadioListeningPlayer({
   }, [open]);
 
   React.useEffect(() => {
-    if (!open || !ambience.video) return;
-    const video = backgroundVideoRef.current;
-    if (!video) return;
-
-    video.muted = true;
-    void video.play().catch((error: unknown) => {
-      if (error instanceof DOMException && error.name === 'AbortError') return;
-      console.error(`Unable to play radio ambience video: ${ambience.id}`, error);
-    });
-    return () => video.pause();
-  }, [ambience.id, ambience.video, open]);
-
-  React.useEffect(() => {
-    if (open) return;
-    generatedAmbience.stop();
-    setAmbienceSoundEnabled(false);
-  }, [generatedAmbience, open]);
-
-  React.useEffect(() => {
     if (!open) return;
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return;
+      if (
+        stationSelectOpenRef.current
+        || (event.target instanceof Element && event.target.closest('[role="combobox"], [role="listbox"]'))
+      ) return;
       if (playlistOpen) setPlaylistOpen(false);
-      else if (ambienceMenuOpen) setAmbienceMenuOpen(false);
-      else if (volumeOpen) setVolumeOpen(false);
       else onClose();
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [open, playlistOpen, ambienceMenuOpen, volumeOpen, onClose]);
+    window.addEventListener('keydown', handleKeyDown, true);
+    return () => window.removeEventListener('keydown', handleKeyDown, true);
+  }, [open, playlistOpen, onClose]);
 
   if (!open) return null;
 
@@ -134,6 +109,19 @@ export function RadioListeningPlayer({
     if (next) onSelectStation(next);
   };
 
+  const selectStation = (stationId: string) => {
+    const next = stations.find((item) => item.id === Number(stationId));
+    if (next) onSelectStation(next);
+  };
+
+  const statusLabel = isLoading
+    ? 'جارٍ الاتصال بالبث'
+    : error
+      ? 'تعذر الاتصال'
+      : isPlaying
+        ? 'بث مباشر الآن'
+        : 'البث متوقف مؤقتًا';
+
   return (
     <div
       ref={dialogRef}
@@ -141,29 +129,9 @@ export function RadioListeningPlayer({
       aria-modal="true"
       aria-label="مشغل الإذاعة"
       tabIndex={-1}
-      className="quran-listening"
-      style={{
-        backgroundImage: ambience.image
-          ? `url("${ambience.image}")`
-          : ambience.fallback,
-      }}
+      className="quran-listening radio-listening"
+      dir="rtl"
     >
-      {open && ambience.video && (
-        <video
-          key={ambience.id}
-          ref={backgroundVideoRef}
-          className="quran-listening__video"
-          src={ambience.video}
-          poster={ambience.image ?? undefined}
-          muted
-          loop
-          playsInline
-          preload="none"
-          aria-hidden="true"
-        />
-      )}
-      <div className="quran-listening__shade" aria-hidden="true" />
-
       <header className="quran-listening__top">
         <button
           type="button"
@@ -173,59 +141,34 @@ export function RadioListeningPlayer({
         >
           <X aria-hidden="true" />
         </button>
-        <div className="quran-listening__ambience-wrap">
+        <span className="quran-listening__brand" aria-label="سُبُل">سُبُل</span>
+        <div className="radio-listening__actions">
           <button
             type="button"
-            className="quran-listening__ambience"
-            aria-expanded={ambienceMenuOpen}
-            aria-haspopup="listbox"
-            onClick={() => setAmbienceMenuOpen((value) => !value)}
+            className="radio-listening__stations"
+            onClick={() => setPlaylistOpen(true)}
           >
-            <Icon aria-hidden="true" />
-            <span>{ambience.label}</span>
-            <ChevronDown className="quran-listening__chevron" aria-hidden="true" />
+            <ListMusic aria-hidden="true" />
+            <span>المحطات</span>
           </button>
-          {ambienceMenuOpen && (
-            <div className="quran-listening__ambience-menu" role="listbox" aria-label="اختر الخلفية">
-              {LISTENING_AMBIENCES.map((option) => {
-                const OptionIcon = option.icon;
-                const selected = option.id === ambience.id;
-                return (
-                  <button
-                    key={option.id}
-                    type="button"
-                    role="option"
-                    aria-selected={selected}
-                    className="quran-listening__menu-option"
-                    onClick={() => {
-                      setAmbienceId(option.id);
-                      if (option.video && ambienceVolume > 0) {
-                        void generatedAmbience.play(option.id, ambienceVolume).then(() => {
-                          setAmbienceSoundEnabled(true);
-                        }).catch((error: unknown) => {
-                          setAmbienceSoundEnabled(false);
-                          console.error(`Unable to play radio ambience sound: ${option.id}`, error);
-                        });
-                      } else {
-                        generatedAmbience.stop();
-                        setAmbienceSoundEnabled(false);
-                      }
-                      setAmbienceMenuOpen(false);
-                    }}
-                  >
-                    <OptionIcon aria-hidden="true" />
-                    <span>{option.label}</span>
-                    {selected && <Check className="quran-listening__selected" aria-hidden="true" />}
-                  </button>
-                );
-              })}
-            </div>
-          )}
         </div>
-        <span className="quran-listening__brand" aria-label="سُبُل">سُبُل</span>
       </header>
 
-      <div id="glass-listening-player" className="quran-listening__main" style={playerSizeStyle}>
+      <picture className="radio-listening__backdrop">
+        <source
+          media="(max-width: 640px) and (orientation: portrait), (min-width: 641px) and (max-width: 1024px) and (orientation: portrait)"
+          srcSet="/images/quran-radio-sunny-corner.png"
+        />
+        <img
+          src="/images/quran-radio-corner.png"
+          alt=""
+          aria-hidden="true"
+          draggable={false}
+        />
+      </picture>
+      <div className="quran-listening__shade radio-listening__shade" aria-hidden="true" />
+
+      <div className="quran-listening__main radio-listening__main" dir="rtl">
         <div className="quran-listening__track">
           <button
             type="button"
@@ -237,6 +180,7 @@ export function RadioListeningPlayer({
             ))}
             aria-label={isFavorite ? 'إزالة المحطة من المفضلة' : 'إضافة المحطة إلى المفضلة'}
             aria-pressed={isFavorite}
+            title={isFavorite ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة'}
           >
             <Star aria-hidden="true" />
           </button>
@@ -245,23 +189,23 @@ export function RadioListeningPlayer({
               <Radio aria-hidden="true" />
             </div>
             <div className="quran-listening__track-copy">
-              <p className="quran-listening__surah">{station.name}</p>
+              <p className="quran-listening__surah" title={station.name}>{station.name}</p>
               <p className="quran-listening__reciter">إذاعة القرآن الكريم</p>
               <p className="quran-listening__status" role="status" aria-live="polite">
-                {isLoading ? 'جارٍ الاتصال بالبث…' : error || (isPlaying ? 'بث مباشر الآن' : 'البث متوقف مؤقتًا')}
+                {isLoading ? 'جارٍ الاتصال بالبث…' : statusLabel}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="quran-listening__controls" dir="ltr">
-          <span className="quran-listening__control quran-listening__live" aria-label="بث مباشر">LIVE</span>
+        <div className="quran-listening__controls radio-listening__controls" dir="ltr">
           <button
             type="button"
             className="quran-listening__control"
             onClick={() => selectAdjacent(-1)}
             disabled={currentIndex <= 0}
             aria-label="المحطة السابقة"
+            title="المحطة السابقة"
           >
             <SkipBack aria-hidden="true" />
           </button>
@@ -271,6 +215,7 @@ export function RadioListeningPlayer({
             onClick={onTogglePlayback}
             disabled={isLoading && !isPlaying}
             aria-label={isPlaying ? 'إيقاف مؤقت' : 'استئناف البث'}
+            title={isPlaying ? 'إيقاف مؤقت' : 'استئناف البث'}
           >
             {isLoading ? <Loader2 className="animate-spin" aria-hidden="true" /> : isPlaying ? <Pause aria-hidden="true" /> : <Play aria-hidden="true" />}
           </button>
@@ -280,97 +225,65 @@ export function RadioListeningPlayer({
             onClick={() => selectAdjacent(1)}
             disabled={currentIndex < 0 || currentIndex >= stations.length - 1}
             aria-label="المحطة التالية"
+            title="المحطة التالية"
           >
             <SkipForward aria-hidden="true" />
           </button>
-          <span className="quran-listening__control" aria-hidden="true"><Headphones /></span>
         </div>
 
-        <div className="quran-listening__progress quran-listening__live-status" role="status" aria-label="إذاعة مباشرة">
-          <span className="quran-listening__live-dot" />
-          <span>{isPlaying ? 'يُبث الآن مباشرة' : isLoading ? 'جارٍ الاتصال بالمحطة' : 'جاهز للاستماع'}</span>
-          {error && <span className="quran-listening__retry-text">{error}</span>}
-        </div>
-
-        <footer className="quran-listening__utilities">
-          <button
-            type="button"
-            className="quran-listening__utility"
-            onClick={() => {
-              setAmbienceMenuOpen(false);
-              setVolumeOpen(false);
-              setPlaylistOpen(true);
-            }}
-            aria-label="فتح قائمة الإذاعات"
-          >
-            <ListMusic aria-hidden="true" />
-            <span>قائمة الإذاعات</span>
-          </button>
-          <div className="quran-listening__volume-wrap">
-            <button
-              type="button"
-              className="quran-listening__utility"
-              onClick={() => setVolumeOpen((value) => !value)}
-              aria-expanded={volumeOpen}
-              aria-label="خيارات مستوى الصوت"
+        <div className="radio-listening__settings">
+          <label className="radio-listening__station-control">
+            <span>المحطة</span>
+            <Select
+              value={String(station.id)}
+              onValueChange={selectStation}
+              onOpenChange={(isOpen) => { stationSelectOpenRef.current = isOpen; }}
+              dir="rtl"
             >
-              {volume === 0 && (!ambienceSoundEnabled || ambienceVolume === 0)
-                ? <VolumeX aria-hidden="true" />
-                : <Volume2 aria-hidden="true" />}
-              <span>الصوت</span>
-            </button>
-            {volumeOpen && (
-              <div className="quran-listening__volume">
-                <label className="quran-listening__volume-row">
-                  <Headphones aria-hidden="true" />
-                  <span>صوت الإذاعة</span>
-                  <span>{volume}%</span>
-                  <input
-                    type="range"
-                    min={0}
-                    max={100}
-                    step={1}
-                    value={volume}
-                    onChange={(event) => onVolumeChange(Number(event.target.value))}
-                    aria-label="مستوى صوت الإذاعة"
-                  />
-                </label>
-                {ambience.video && (
-                  <label className="quran-listening__volume-row">
-                    <Radio aria-hidden="true" />
-                    <span>صوت الخلفية</span>
-                    <span>{Math.round(ambienceVolume * 100)}%</span>
-                    <input
-                      type="range"
-                      min={0}
-                      max={1}
-                      step={0.01}
-                      value={ambienceVolume}
-                      onChange={(event) => {
-                        const nextVolume = Number(event.target.value);
-                        setAmbienceVolume(nextVolume);
-                        generatedAmbience.setVolume(nextVolume);
-                        if (nextVolume === 0) {
-                          generatedAmbience.stop();
-                          setAmbienceSoundEnabled(false);
-                        } else if (!ambienceSoundEnabled) {
-                          void generatedAmbience.play(ambience.id, nextVolume).then(() => {
-                            setAmbienceSoundEnabled(true);
-                          }).catch((error: unknown) => {
-                            setAmbienceSoundEnabled(false);
-                            console.error(`Unable to play radio ambience sound: ${ambience.id}`, error);
-                          });
-                        }
-                      }}
-                      aria-label="مستوى صوت الخلفية"
-                    />
-                  </label>
-                )}
-              </div>
-            )}
-          </div>
-        </footer>
-        {resizeHandles}
+              <SelectTrigger
+                className="radio-listening__station-trigger"
+                aria-label="اختيار محطة إذاعية"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent
+                className="radio-device__station-options"
+                position="popper"
+                align="center"
+                side="bottom"
+                sideOffset={6}
+              >
+                {stations.map((item) => (
+                  <SelectItem
+                    key={item.id}
+                    value={String(item.id)}
+                    className="radio-device__station-option"
+                    dir="rtl"
+                  >
+                    {item.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </label>
+          <label className="radio-listening__volume-control">
+            <span>الصوت</span>
+            {volume === 0 ? <VolumeX aria-hidden="true" /> : <Volume2 aria-hidden="true" />}
+            <input
+              type="range"
+              min={0}
+              max={100}
+              step={1}
+              value={volume}
+              onChange={(event) => onVolumeChange(Number(event.target.value))}
+              dir="ltr"
+              aria-label="مستوى صوت الإذاعة"
+            />
+            <span className="radio-listening__volume-value">{volume}%</span>
+          </label>
+        </div>
+
+        {error && <p className="radio-listening__panel-error" role="alert">{error}</p>}
       </div>
 
       {playlistOpen && (

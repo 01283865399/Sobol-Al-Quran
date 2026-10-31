@@ -6,13 +6,20 @@ import { Navbar } from '@/components/navbar';
 interface PageLayoutProps {
   children: React.ReactNode;
   showHomeLink?: boolean;
+  hideNavbar?: boolean;
+  mainClassName?: string;
 }
 
-export function PageLayout({ children, showHomeLink = true }: PageLayoutProps) {
+export function PageLayout({
+  children,
+  showHomeLink = true,
+  hideNavbar = false,
+  mainClassName,
+}: PageLayoutProps) {
   return (
     <>
-      <Navbar />
-      <main className={`min-h-screen${showHomeLink ? ' pt-2' : ''}`}>
+      {!hideNavbar && <Navbar />}
+      <main className={`min-h-screen${showHomeLink ? ' pt-2' : ''}${mainClassName ? ` ${mainClassName}` : ''}`}>
         {showHomeLink && (
           <div className="w-full px-4 pt-4 lg:px-8">
             <Link
@@ -34,28 +41,17 @@ interface PageHeaderProps {
   title: string;
   subtitle?: string;
   icon?: React.ReactNode;
+  compact?: boolean;
 }
 
-export function PageHeader({ title, subtitle, icon }: PageHeaderProps) {
+export function PageHeader({ title, subtitle, icon, compact = false }: PageHeaderProps) {
   return (
-    <section className="page-header relative overflow-hidden py-12 lg:py-16">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(221,183,104,0.12),transparent_62%)]" />
-      <div className="relative z-10 w-full px-4 lg:px-8">
-        <div className="mx-auto text-center">
-          {icon && (
-            <div className="page-header__icon mx-auto mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[26px] border border-gold/30 bg-card text-gold">
-              {icon}
-            </div>
-          )}
-          <h1 className="font-kufi text-3xl lg:text-5xl font-black text-gold-gradient">{title}</h1>
-          {subtitle && <p className="mt-3 text-base text-muted-foreground">{subtitle}</p>}
-          <div className="mt-5 flex items-center justify-center gap-3">
-            <div className="h-px w-12 bg-gradient-to-l from-gold/40 to-transparent" />
-            <div className="h-3 w-3 rotate-45 bg-gold/60" />
-            <div className="h-1.5 w-1.5 rotate-45 bg-gold/60" />
-            <div className="h-3 w-3 rotate-45 bg-gold/60" />
-            <div className="h-px w-12 bg-gradient-to-r from-gold/40 to-transparent" />
-          </div>
+    <section className={`page-header${compact ? ' page-header--compact' : ''}`}>
+      <div className="page-header__content">
+        {icon && <div className="page-header__icon" aria-hidden="true">{icon}</div>}
+        <div className="page-header__copy">
+          <h1 className="font-kufi font-black text-gold-gradient">{title}</h1>
+          {subtitle && <p>{subtitle}</p>}
         </div>
       </div>
     </section>

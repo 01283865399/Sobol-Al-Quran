@@ -7,6 +7,8 @@ import {
   Pause,
   Play,
   Radio,
+  SkipBack,
+  SkipForward,
   Square,
   Volume2,
 } from 'lucide-react';
@@ -21,7 +23,7 @@ interface AudioNavigationContextValue {
   mainPlayerOpen: boolean;
   setMainPlayerOpen: (open: boolean) => void;
   setPlayerRoute: (route: string) => void;
-  openMainPlayer: () => void;
+  openMainPlayer: (route?: string) => void;
 }
 
 interface QuranPlaybackContextValue {
@@ -122,14 +124,15 @@ export function AudioPlaybackProvider({ children }: { children: React.ReactNode 
     setRadioVolumeState(nextVolume);
   }, []);
 
-  const openMainPlayer = React.useCallback(() => {
-    if (!playerRoute) return;
-    if (pathname === playerRoute) {
+  const openMainPlayer = React.useCallback((route = playerRoute) => {
+    if (!route) return;
+    setPlayerRoute(route);
+    if (pathname === route) {
       setMainPlayerOpen(true);
       return;
     }
-    pendingOpenRouteRef.current = playerRoute;
-    navigate(playerRoute);
+    pendingOpenRouteRef.current = route;
+    navigate(route);
   }, [navigate, pathname, playerRoute]);
 
   React.useEffect(() => {
@@ -154,6 +157,10 @@ export function AudioPlaybackProvider({ children }: { children: React.ReactNode 
       stopRadioPlayback();
       return quranPlayer.playFullSurah(...args);
     },
+    playFullSurahQueue: (...args) => {
+      stopRadioPlayback();
+      return quranPlayer.playFullSurahQueue(...args);
+    },
     playAyah: (...args) => {
       stopRadioPlayback();
       return quranPlayer.playAyah(...args);
@@ -174,7 +181,10 @@ export function AudioPlaybackProvider({ children }: { children: React.ReactNode 
       setIsRadioPlaying(true);
       setRadioError('');
     };
-    const onWaiting = () => setIsRadioLoading(true);
+    const onWaiting = () => {
+      setIsRadioLoading(true);
+      setIsRadioPlaying(false);
+    };
     const onPause = () => {
       setIsRadioLoading(false);
       setIsRadioPlaying(false);
@@ -250,7 +260,7 @@ export function AudioPlaybackProvider({ children }: { children: React.ReactNode 
           <audio ref={quranPlayer.audioRef} preload="none" aria-hidden="true" />
           <audio ref={radioAudioRef} preload="none" aria-label="مشغل البث الإذاعي" />
           {children}
-          {hasActivePlayback && !mainPlayerOpen && (
+          {hasActivePlayback && !mainPlayerOpen && pathname !== '/radio' && !(pathname.startsWith('/quran/read') && hasQuranPlayback) && (
             <aside
               className="global-audio-player"
               aria-label="مشغل صوت مستمر"
@@ -264,7 +274,7 @@ export function AudioPlaybackProvider({ children }: { children: React.ReactNode 
           <button
             type="button"
             className="global-audio-player__art"
-            onClick={openMainPlayer}
+            onClick={() => openMainPlayer()}
             aria-label="العودة إلى المشغل الكامل"
             title="فتح المشغل الكامل"
           >
@@ -272,7 +282,7 @@ export function AudioPlaybackProvider({ children }: { children: React.ReactNode 
               ? <Radio className="h-5 w-5" aria-hidden="true" />
               : <Volume2 className="h-5 w-5" aria-hidden="true" />}
           </button>
-          <button type="button" className="global-audio-player__track" onClick={openMainPlayer}>
+          <button type="button" className="global-audio-player__track" onClick={() => openMainPlayer()}>
             <span className="global-audio-player__title">
               {selectedStation?.name ?? `سورة ${quran.currentSurahNumber}`}
             </span>
@@ -303,6 +313,28 @@ export function AudioPlaybackProvider({ children }: { children: React.ReactNode 
             />
           </label>
           <div className="global-audio-player__actions">
+            {!isRadioSelected && quran.fullSurahQueueLength > 0 && (
+              <>
+                <button
+                  type="button"
+                  className="global-audio-player__button"
+                  onClick={() => quran.skipFullSurahQueue(-1)}
+                  disabled={quran.fullSurahQueueIndex <= 0}
+                  aria-label="السورة السابقة في قائمة التشغيل"
+                >
+                  <SkipBack className="h-4 w-4" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  className="global-audio-player__button"
+                  onClick={() => quran.skipFullSurahQueue(1)}
+                  disabled={quran.fullSurahQueueIndex >= quran.fullSurahQueueLength - 1}
+                  aria-label="السورة التالية في قائمة التشغيل"
+                >
+                  <SkipForward className="h-4 w-4" aria-hidden="true" />
+                </button>
+              </>
+            )}
             <button
               type="button"
               className="global-audio-player__button global-audio-player__button--play"
@@ -320,7 +352,7 @@ export function AudioPlaybackProvider({ children }: { children: React.ReactNode 
             <button
               type="button"
               className="global-audio-player__button global-audio-player__button--open"
-              onClick={openMainPlayer}
+              onClick={() => openMainPlayer()}
               aria-label="العودة إلى المشغل الكامل"
               title="فتح المشغل الكامل"
             >
