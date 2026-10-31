@@ -460,6 +460,107 @@
     width: .9rem;
     height: .9rem;
   }
+  .developer-credit {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 62rem;
+    margin: 2rem auto 0;
+    padding: .8rem 1rem .8rem .85rem;
+    border: 1px solid rgba(166, 126, 53, .2);
+    border-radius: 1.15rem;
+    background:
+      radial-gradient(circle at 12% 0%, rgba(198, 160, 76, .13), transparent 30%),
+      rgba(255, 253, 247, .74);
+    box-shadow: 0 .6rem 1.6rem rgba(63, 53, 32, .06);
+    color: inherit;
+    text-decoration: none;
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  }
+  .developer-credit:hover {
+    transform: translateY(-2px);
+    border-color: rgba(166, 126, 53, .42);
+    box-shadow: 0 .9rem 2rem rgba(63, 53, 32, .11);
+  }
+  .developer-credit__avatar {
+    flex: 0 0 3.2rem;
+    width: 3.2rem;
+    height: 3.2rem;
+    padding: .16rem;
+    border: 1px solid rgba(166, 126, 53, .3);
+    border-radius: 50%;
+    background: #fff;
+  }
+  .developer-credit__avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .developer-credit__copy {
+    display: grid;
+    gap: .12rem;
+    min-width: 0;
+    text-align: right;
+  }
+  .developer-credit__copy small,
+  .developer-credit__copy > span {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    color: #718070;
+    font-size: .68rem;
+  }
+  .developer-credit__copy small svg {
+    width: .8rem;
+    height: .8rem;
+    color: #a06a34;
+  }
+  .developer-credit__copy strong {
+    color: #314238;
+    font-size: .98rem;
+  }
+  .developer-credit__action {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    margin-right: auto;
+    padding: .55rem .8rem;
+    border-radius: .75rem;
+    color: #a06a34;
+    background: rgba(166, 126, 53, .09);
+    font-size: .75rem;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+  .developer-credit__action svg {
+    width: .95rem;
+    height: .95rem;
+  }
+  @media (max-width: 560px) {
+    .developer-credit {
+      align-items: flex-start;
+      gap: .7rem;
+      padding: .75rem;
+    }
+    .developer-credit__avatar {
+      flex-basis: 2.7rem;
+      width: 2.7rem;
+      height: 2.7rem;
+    }
+    .developer-credit__copy > span {
+      max-width: 11rem;
+      line-height: 1.4;
+    }
+    .developer-credit__action {
+      align-self: center;
+      padding: .5rem;
+      font-size: 0;
+    }
+    .developer-credit__action svg {
+      margin: 0;
+    }
+  }
   @media (max-width: 900px) {
     .developer-project-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));

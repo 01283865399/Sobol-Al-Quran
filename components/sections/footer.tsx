@@ -1,3 +1,4 @@
+import { ArrowLeft, Code2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const footerLinks = {
@@ -58,12 +59,24 @@ export function Footer() {
           ))}
         </div>
 
+        <Link to="/developer" className="developer-credit" aria-label="التعرف على مطوّر موقع سُبُل">
+          <span className="developer-credit__avatar">
+            <img src="/images/developer-ahmed.jpg" alt="" />
+          </span>
+          <span className="developer-credit__copy">
+            <small><Code2 aria-hidden="true" /> تصميم وتطوير</small>
+            <strong>م. أحمد ديب</strong>
+            <span>مطور Full-Stack وعلوم الذكاء الاصطناعي</span>
+          </span>
+          <span className="developer-credit__action">
+            اكتشف أعمالي
+            <ArrowLeft aria-hidden="true" />
+          </span>
+        </Link>
+
         <div className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-border pt-5 text-sm text-muted-foreground md:flex-row">
           <p>© 2025 نور — جميع الحقوق محفوظة</p>
           <div className="flex items-center gap-4">
-            <Link to="/developer" className="font-medium text-gold-gradient hover:opacity-80">
-              Developed by المهندس أحمد ديب
-            </Link>
             <Link to="/privacy" className="hover:text-gold">سياسة الخصوصية</Link>
             <Link to="/terms" className="hover:text-gold">الشروط</Link>
           </div>
